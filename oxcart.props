@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <BinDir>$(SolutionDir)$(ProjectName)\bin\</BinDir>
+    <BldDir>$(SolutionDir)$(ProjectName)\bld\</BldDir>
+    <DatDir>$(SolutionDir)$(ProjectName)\dat\</DatDir>
+    <IncludeDir>$(SolutionDir)$(ProjectName)\include\</IncludeDir>
+    <LibDir>$(SolutionDir)$(ProjectName)\lib\</LibDir>
+    <SrcDir>$(SolutionDir)$(ProjectName)\src\</SrcDir>
+    <ToolsDir>$(SolutionDir)$(ProjectName)\tools\</ToolsDir>
+    <FreetypeIncludeDir>$(SolutionDir)freetype\include\</FreetypeIncludeDir>
+    <LodepngIncludeDir>$(SolutionDir)lodepng\include\</LodepngIncludeDir>
+    <LuaIncludeDir>$(SolutionDir)lua\include\</LuaIncludeDir>
+    <PhysfsIncludeDir>$(SolutionDir)physfs\include\</PhysfsIncludeDir>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="BinDir">
+      <Value>$(BinDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BldDir">
+      <Value>$(BldDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="DatDir">
+      <Value>$(DatDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="IncludeDir">
+      <Value>$(IncludeDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LibDir">
+      <Value>$(LibDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="SrcDir">
+      <Value>$(SrcDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="ToolsDir">
+      <Value>$(ToolsDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="FreetypeIncludeDir">
+      <Value>$(FreetypeIncludeDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LodepngIncludeDir">
+      <Value>$(LodepngIncludeDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LuaIncludeDir">
+      <Value>$(LuaIncludeDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PhysfsIncludeDir">
+      <Value>$(PhysfsIncludeDir)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="debug|Win32">
+      <Configuration>debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="release|Win32">
+      <Configuration>release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CF49B9EC-C426-41FE-9BFF-5621E93BF1A0}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>oxcart</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\oxcart.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\oxcart.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(BinDir)$(Configuration)\</OutDir>
+    <IntDir>$(BldDir)$(Configuration)\</IntDir>
+    <CustomBuildBeforeTargets>Clean</CustomBuildBeforeTargets>
+    <IncludePath>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(BinDir)$(Configuration)\</OutDir>
+    <IntDir>$(BldDir)$(Configuration)\</IntDir>
+    <CustomBuildBeforeTargets>Clean</CustomBuildBeforeTargets>
+    <IncludePath>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0601;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludeDir);$(FreetypeIncludeDir);$(LodepngIncludeDir);$(LuaIncludeDir);$(PhysfsIncludeDir)</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4100;4701;4703;4706</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <AdditionalDependencies>winmm.lib;opengl32.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ResDir)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>$(ToolsDir)7-zip\7z.exe a -tzip $(BinDir)$(Configuration)\oxcart.zip $(DatDir)*</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>del $(BinDir)$(Configuration)\oxcart.zip</Command>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>del $(BinDir)$(Configuration)\oxcart.zip</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Delete oxcart.zip</Message>
+      <Outputs>dummy</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_CONSOLE;_WIN32_WINNT=0x0601;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludeDir);$(FreetypeIncludeDir);$(LodepngIncludeDir);$(LuaIncludeDir);$(PhysfsIncludeDir)</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <StringPooling>true</StringPooling>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <DisableSpecificWarnings>4100;4701;4703;4706</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <AdditionalDependencies>winmm.lib;opengl32.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ResDir)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PreBuildEvent>
+      <Command>del $(BinDir)$(Configuration)\oxcart.zip</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>$(ToolsDir)7-zip\7z.exe a -tzip $(BinDir)$(Configuration)\oxcart.zip $(DatDir)*</Command>
+    </PostBuildEvent>
+    <CustomBuildStep>
+      <Command>del $(BinDir)$(Configuration)\oxcart.zip</Command>
+      <Message>Delete oxcart.zip</Message>
+      <Outputs>dummy</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\oxcart_app.c" />
+    <ClCompile Include="..\src\oxcart_assert.c" />
+    <ClCompile Include="..\src\oxcart_atlas.c" />
+    <ClCompile Include="..\src\oxcart_cube.c" />
+    <ClCompile Include="..\src\oxcart_delegate.c" />
+    <ClCompile Include="..\src\oxcart_font.c" />
+    <ClCompile Include="..\src\oxcart_gl.c" />
+    <ClCompile Include="..\src\oxcart_hashmap.c" />
+    <ClCompile Include="..\src\oxcart_lua.c" />
+    <ClCompile Include="..\src\oxcart_nvpr.c" />
+    <ClCompile Include="..\src\oxcart_scene.c" />
+    <ClCompile Include="..\src\oxcart_shader.c" />
+    <ClCompile Include="..\src\oxcart_state.c" />
+    <ClCompile Include="..\src\oxcart_text.c" />
+    <ClCompile Include="..\src\oxcart_vector.c" />
+    <ClCompile Include="..\src\oxcart_wgl.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\oxcart_app.h" />
+    <ClInclude Include="..\src\oxcart_assert.h" />
+    <ClInclude Include="..\src\oxcart_atlas.h" />
+    <ClInclude Include="..\src\oxcart_cube.h" />
+    <ClInclude Include="..\src\oxcart_delegate.h" />
+    <ClInclude Include="..\src\oxcart_font.h" />
+    <ClInclude Include="..\src\oxcart_gl.h" />
+    <ClInclude Include="..\src\oxcart_hashmap.h" />
+    <ClInclude Include="..\src\oxcart_lua.h" />
+    <ClInclude Include="..\src\oxcart_math.h" />
+    <ClInclude Include="..\src\oxcart_nvpr.h" />
+    <ClInclude Include="..\src\oxcart_scene.h" />
+    <ClInclude Include="..\src\oxcart_shader.h" />
+    <ClInclude Include="..\src\oxcart_state.h" />
+    <ClInclude Include="..\src\oxcart_text.h" />
+    <ClInclude Include="..\src\oxcart_util.h" />
+    <ClInclude Include="..\src\oxcart_vector.h" />
+    <ClInclude Include="..\src\oxcart_wgl.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\dat\config\oxcart_app.lua" />
+    <None Include="..\dat\config\oxcart_text.lua" />
+    <None Include="..\dat\shader\oxcart_cube.frag" />
+    <None Include="..\dat\shader\oxcart_cube.vert" />
+    <None Include="..\dat\shader\oxcart_text.frag" />
+    <None Include="..\dat\shader\oxcart_text.vert" />
+    <None Include="..\src\oxcart_math.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\freetype\bld\freetype.vcxproj">
+      <Project>{78b079bd-9fc7-4b9e-b4a6-96da0f00248b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lodepng\bld\lodepng.vcxproj">
+      <Project>{419459c4-7ccb-43dd-9fae-42f6e73814e1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lua\bld\lua.vcxproj">
+      <Project>{08078815-96d1-4ee4-88b6-469bea8b99de}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\physfs\bld\physfs.vcxproj">
+      <Project>{442db75e-6619-404b-a75b-dccd66d3056e}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

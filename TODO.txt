@@ -1,0 +1,11 @@
+- Each oxcart_text instance currently encapsulates a single vertex buffer which
+  itself is used to store data for a single string.  Having numerous vertex
+  buffers is not recommended, so re-using a single oxcart_text instance for
+  different strings is currently required.  This is inefficient and requires a
+  lot of back and forth to the gpu.  This form of oxcart_text should be used for
+  dynamic text (e.g. fps counter which changes every frame).  A new variant
+  should be made that has a single vertex buffer, but stores multiple strings in
+  it, each possibly being referenced using glDrawElementsBaseVertex().  This
+  form should be used for static text.  Each string will have a max length limit
+  (i.e. size of buffer divided by number of possible entries).
+  

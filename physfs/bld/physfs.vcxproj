@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="debug|Win32">
+      <Configuration>debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="release|Win32">
+      <Configuration>release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\physfs.h" />
+    <ClInclude Include="..\src\crc32.h" />
+    <ClInclude Include="..\src\deflate.h" />
+    <ClInclude Include="..\src\inffast.h" />
+    <ClInclude Include="..\src\inffixed.h" />
+    <ClInclude Include="..\src\inflate.h" />
+    <ClInclude Include="..\src\inftrees.h" />
+    <ClInclude Include="..\src\physfs_casefolding.h" />
+    <ClInclude Include="..\src\physfs_internal.h" />
+    <ClInclude Include="..\src\physfs_platforms.h" />
+    <ClInclude Include="..\src\trees.h" />
+    <ClInclude Include="..\src\zconf.h" />
+    <ClInclude Include="..\src\zlib.h" />
+    <ClInclude Include="..\src\zutil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\adler32.c" />
+    <ClCompile Include="..\src\compress.c" />
+    <ClCompile Include="..\src\crc32.c" />
+    <ClCompile Include="..\src\deflate.c" />
+    <ClCompile Include="..\src\dir.c" />
+    <ClCompile Include="..\src\grp.c" />
+    <ClCompile Include="..\src\gzio.c" />
+    <ClCompile Include="..\src\hog.c" />
+    <ClCompile Include="..\src\infback.c" />
+    <ClCompile Include="..\src\inffast.c" />
+    <ClCompile Include="..\src\inflate.c" />
+    <ClCompile Include="..\src\inftrees.c" />
+    <ClCompile Include="..\src\lzma.c" />
+    <ClCompile Include="..\src\macosx.c" />
+    <ClCompile Include="..\src\mvl.c" />
+    <ClCompile Include="..\src\os2.c" />
+    <ClCompile Include="..\src\physfs.c" />
+    <ClCompile Include="..\src\physfs_byteorder.c" />
+    <ClCompile Include="..\src\physfs_unicode.c" />
+    <ClCompile Include="..\src\pocketpc.c" />
+    <ClCompile Include="..\src\posix.c" />
+    <ClCompile Include="..\src\qpak.c" />
+    <ClCompile Include="..\src\trees.c" />
+    <ClCompile Include="..\src\uncompr.c" />
+    <ClCompile Include="..\src\unix.c" />
+    <ClCompile Include="..\src\wad.c" />
+    <ClCompile Include="..\src\windows.c" />
+    <ClCompile Include="..\src\zip.c" />
+    <ClCompile Include="..\src\zutil.c" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{442DB75E-6619-404B-A75B-DCCD66D3056E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>physfs</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\oxcart.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\oxcart.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <OutDir>$(BinDir)$(Configuration)\</OutDir>
+    <IntDir>$(BldDir)$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <OutDir>$(BinDir)$(Configuration)\</OutDir>
+    <IntDir>$(BldDir)$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_REENTRANT;_THREAD_SAFE;HAVE_ASSERT_H;PHYSFS_SUPPORTS_ZIP;Z_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludeDir)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ExceptionHandling>false</ExceptionHandling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_REENTRANT;_THREAD_SAFE;HAVE_ASSERT_H;PHYSFS_SUPPORTS_ZIP;Z_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludeDir)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ExceptionHandling>false</ExceptionHandling>
+      <StringPooling>true</StringPooling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
