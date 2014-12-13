@@ -134,11 +134,11 @@ void oxcart_scene_setviewport(int w, int h)
 
   _m.ortho.projection = oxcart_mat4_orthographic((float)w, (float)h);
   glBindBuffer(GL_UNIFORM_BUFFER, _m.ubo[OXCART_UBO_ORTHO_CAMERA]);
-  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(oxcart_mat4_t), _m.ortho.projection.d);
+  glBufferSubData(GL_UNIFORM_BUFFER, OXCART_OFFSET(oxcart_camera_t, projection), sizeof(oxcart_mat4_t), _m.ortho.projection.d);
 
   _m.persp.projection = oxcart_mat4_perspective(60.0f, (float)w / (float)h, 1.0f, 1000.0f);
   glBindBuffer(GL_UNIFORM_BUFFER, _m.ubo[OXCART_UBO_PERSP_CAMERA]);
-  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(oxcart_mat4_t), _m.persp.projection.d);
+  glBufferSubData(GL_UNIFORM_BUFFER, OXCART_OFFSET(oxcart_camera_t, projection), sizeof(oxcart_mat4_t), _m.persp.projection.d);
 }
 
 /**

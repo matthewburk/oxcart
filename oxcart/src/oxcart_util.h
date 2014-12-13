@@ -33,6 +33,7 @@ extern "C" {
 #define OXCART_ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define OXCART_FILEPATH_LENGTH 256
 #define OXCART_INLINE __inline
+#define OXCART_OFFSET(s, m) (offsetof(s, m))
 #define OXCART_OFFSET_PTR(s, m) ((unsigned char*)0 + offsetof(s, m))
 #define OXCART_VCALL __vectorcall
 
