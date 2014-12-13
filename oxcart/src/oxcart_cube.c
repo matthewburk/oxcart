@@ -43,7 +43,8 @@ struct oxcart_cube_t
 struct oxcart_shader_t
 {
   GLuint program;
-  GLint mvp;
+  GLuint camera;
+  GLint model;
   GLint color;
   GLint vertex;
 };
@@ -134,15 +135,15 @@ void oxcart_cube_destroy(oxcart_cube_t* cube)
 /**
  * 
  */
-void oxcart_cube_draw(oxcart_cube_t* cube, const oxcart_mat4_t* mvp)
+void oxcart_cube_draw(oxcart_cube_t* cube, const oxcart_mat4_t* model)
 {
   OXCART_ASSERT(cube);
-  OXCART_ASSERT(mvp);
+  OXCART_ASSERT(model);
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   glUseProgram(_m.shader.program);
-  glUniformMatrix4fv(_m.shader.mvp, 1, GL_FALSE, mvp->d);
+  glUniformMatrix4fv(_m.shader.model, 1, GL_FALSE, model->d);
   glUniform4fv(_m.shader.color, 1, cube->color.d);
   glBindVertexArray(cube->vao);
   glDrawElements(GL_TRIANGLES, OXCART_ARRAY_SIZE(_indices), GL_UNSIGNED_INT, 0);
@@ -175,7 +176,9 @@ static void _module_loadshader()
   shader[1] = oxcart_shader_createwithfile("/shader/oxcart_cube.frag", GL_FRAGMENT_SHADER);
   _m.shader.program = oxcart_shader_link(shader, OXCART_ARRAY_SIZE(shader));
 
-  _m.shader.mvp = glGetUniformLocation(_m.shader.program, "mvp");
+  _m.shader.camera = glGetUniformBlockIndex(_m.shader.program, "camera");
+  glUniformBlockBinding(_m.shader.program, _m.shader.camera, OXCART_SHADER_BINDPOINT_PERSP_CAMERA);
+  _m.shader.model = glGetUniformLocation(_m.shader.program, "model");
   _m.shader.color = glGetUniformLocation(_m.shader.program, "color");
   _m.shader.vertex = glGetAttribLocation(_m.shader.program, "vertex");
 

@@ -30,6 +30,9 @@
 extern "C" {
 #endif
 
+#define OXCART_SHADER_BINDPOINT_ORTHO_CAMERA 1
+#define OXCART_SHADER_BINDPOINT_PERSP_CAMERA 2
+
 GLuint oxcart_shader_createwithfile(const GLchar* filename, GLenum type);
 GLuint oxcart_shader_createwithstr(const GLchar* str, GLenum type);
 void oxcart_shader_destroy(const GLuint* shader, GLsizei count);

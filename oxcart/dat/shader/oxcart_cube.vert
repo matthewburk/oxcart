@@ -23,7 +23,12 @@
 
 #version 400 core
 
-uniform mat4 mvp;
+uniform camera {
+  mat4 projection;
+  mat4 view;
+};
+
+uniform mat4 model;
 
 in vec3 vertex;
 
@@ -32,5 +37,5 @@ in vec3 vertex;
  */
 void main()
 {
-  gl_Position = mvp * vec4(vertex, 1.0);
+  gl_Position = projection * view * model * vec4(vertex, 1.0);
 }

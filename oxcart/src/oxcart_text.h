@@ -66,7 +66,7 @@ void oxcart_text_metrics(oxcart_text_t* text, const oxcart_markup_t* markup, con
 void oxcart_text_assign(oxcart_text_t* text, const oxcart_markup_t* markup, const char* str, int length, oxcart_vec2_t* pen);
 void oxcart_text_append(oxcart_text_t* text, const oxcart_markup_t* markup, const char* str, int length, oxcart_vec2_t* pen);
 void oxcart_text_clear(oxcart_text_t* text);
-void oxcart_text_draw(oxcart_text_t* text, const oxcart_mat4_t* mvp);
+void oxcart_text_draw(oxcart_text_t* text, const oxcart_mat4_t* model);
 
 /**
  * 

@@ -23,7 +23,12 @@
 
 #version 400 core
 
-uniform mat4 mvp;
+uniform camera {
+  mat4 projection;
+  mat4 view;
+};
+
+uniform mat4 model;
 
 in vec4 vertex;
 in vec2 texcoord;
@@ -37,7 +42,7 @@ out vec4 vs_color;
  */
 void main()
 {
-  gl_Position = mvp * vertex;
+  gl_Position = projection * view * model * vertex;
   vs_texcoord = texcoord;
   vs_color = color;
 }
