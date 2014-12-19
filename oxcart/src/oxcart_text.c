@@ -76,7 +76,7 @@ struct oxcart_text_t
 
 struct oxcart_vertex_t
 {
-  oxcart_vec3_t vertex;
+  oxcart_vec2_t vertex;
   oxcart_vec2_t texcoord;
   oxcart_vec4_t color;
 };
@@ -122,7 +122,7 @@ oxcart_text_t* oxcart_text_create()
   glGenBuffers(1, &text->vbo);
   glBindBuffer(GL_ARRAY_BUFFER, text->vbo);
   glBufferData(GL_ARRAY_BUFFER, text->vcapacity * sizeof(oxcart_vertex_t), 0, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(_m.shader.vertex, 3, GL_FLOAT, GL_FALSE, sizeof(oxcart_vertex_t), OXCART_OFFSET_PTR(oxcart_vertex_t, vertex));
+  glVertexAttribPointer(_m.shader.vertex, 2, GL_FLOAT, GL_FALSE, sizeof(oxcart_vertex_t), OXCART_OFFSET_PTR(oxcart_vertex_t, vertex));
   glEnableVertexAttribArray(_m.shader.vertex);
   glVertexAttribPointer(_m.shader.texcoord, 2, GL_FLOAT, GL_FALSE, sizeof(oxcart_vertex_t), OXCART_OFFSET_PTR(oxcart_vertex_t, texcoord));
   glEnableVertexAttribArray(_m.shader.texcoord);
@@ -295,16 +295,16 @@ void oxcart_text_append(oxcart_text_t* text, const oxcart_markup_t* markup, cons
     x1 = x0 + w;
     y1 = y0 + h;
 
-    vertices[0].vertex = oxcart_vec3_set(x0, y0, 0.0f);
+    vertices[0].vertex = oxcart_vec2_set(x0, y0);
     vertices[0].texcoord = oxcart_vec2_set(s0, t0);
     vertices[0].color = markup->color;
-    vertices[1].vertex = oxcart_vec3_set(x0, y1, 0.0f);
+    vertices[1].vertex = oxcart_vec2_set(x0, y1);
     vertices[1].texcoord = oxcart_vec2_set(s0, t1);
     vertices[1].color = markup->color;
-    vertices[2].vertex = oxcart_vec3_set(x1, y1, 0.0f);
+    vertices[2].vertex = oxcart_vec2_set(x1, y1);
     vertices[2].texcoord = oxcart_vec2_set(s1, t1);
     vertices[2].color = markup->color;
-    vertices[3].vertex = oxcart_vec3_set(x1, y0, 0.0f);
+    vertices[3].vertex = oxcart_vec2_set(x1, y0);
     vertices[3].texcoord = oxcart_vec2_set(s1, t0);
     vertices[3].color = markup->color;
 
@@ -519,7 +519,7 @@ static void _module_loadshader()
   _m.shader.program = oxcart_shader_link(shader, OXCART_ARRAY_SIZE(shader));
 
   _m.shader.camera = glGetUniformBlockIndex(_m.shader.program, "camera");
-  glUniformBlockBinding(_m.shader.program, _m.shader.camera, OXCART_SHADER_BINDPOINT_ORTHO_CAMERA);
+  glUniformBlockBinding(_m.shader.program, _m.shader.camera, OXCART_SHADER_BINDPOINT_CAMERA_ORTHO);
   _m.shader.model = glGetUniformLocation(_m.shader.program, "model");
   _m.shader.sampler = glGetUniformLocation(_m.shader.program, "sampler");
   _m.shader.vertex = glGetAttribLocation(_m.shader.program, "vertex");

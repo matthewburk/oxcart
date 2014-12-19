@@ -35,8 +35,10 @@ typedef struct oxcart_module_t oxcart_module_t;
 struct oxcart_cube_t
 {
   oxcart_vec4_t color;
+  oxcart_vec3_t light;
   GLuint vao;
   GLuint vbo;
+  GLuint nbo;
   GLuint ibo;
 };
 
@@ -46,7 +48,9 @@ struct oxcart_shader_t
   GLuint camera;
   GLint model;
   GLint color;
+  GLint light;
   GLint vertex;
+  GLint normal;
 };
 
 struct oxcart_module_t
@@ -59,29 +63,66 @@ static void _module_initialize();
 static void _module_loadshader();
 
 static const GLfloat _vertices[] = {
-  -0.25f, -0.25f, -0.25f,
-  -0.25f,  0.25f, -0.25f,
-   0.25f, -0.25f, -0.25f,
-   0.25f,  0.25f, -0.25f,
-   0.25f, -0.25f,  0.25f,
-   0.25f,  0.25f,  0.25f,
-  -0.25f, -0.25f,  0.25f,
-  -0.25f,  0.25f,  0.25f
+  -0.5f,  0.5f,  0.5f, /* front  */
+  -0.5f, -0.5f,  0.5f, 
+   0.5f, -0.5f,  0.5f, 
+   0.5f,  0.5f,  0.5f, 
+   0.5f,  0.5f, -0.5f, /* back   */
+   0.5f, -0.5f, -0.5f, 
+  -0.5f, -0.5f, -0.5f, 
+  -0.5f,  0.5f, -0.5f, 
+   0.5f,  0.5f,  0.5f, /* right  */
+   0.5f, -0.5f,  0.5f, 
+   0.5f, -0.5f, -0.5f, 
+   0.5f,  0.5f, -0.5f, 
+  -0.5f,  0.5f, -0.5f, /* top    */
+  -0.5f,  0.5f,  0.5f, 
+   0.5f,  0.5f,  0.5f, 
+   0.5f,  0.5f, -0.5f, 
+  -0.5f,  0.5f, -0.5f, /* left   */
+  -0.5f, -0.5f, -0.5f, 
+  -0.5f, -0.5f,  0.5f, 
+  -0.5f,  0.5f,  0.5f, 
+  -0.5f, -0.5f,  0.5f, /* bottom */
+  -0.5f, -0.5f, -0.5f, 
+   0.5f, -0.5f, -0.5f, 
+   0.5f, -0.5f,  0.5f
+};
+
+static const GLfloat _normals[] = {
+   0.0f,  0.0f,  1.0f, /* front  */
+   0.0f,  0.0f,  1.0f,
+   0.0f,  0.0f,  1.0f,
+   0.0f,  0.0f,  1.0f,
+   0.0f,  0.0f, -1.0f, /* back   */
+   0.0f,  0.0f, -1.0f,
+   0.0f,  0.0f, -1.0f,
+   0.0f,  0.0f, -1.0f,
+   1.0f,  0.0f,  0.0f, /* right  */
+   1.0f,  0.0f,  0.0f,
+   1.0f,  0.0f,  0.0f,
+   1.0f,  0.0f,  0.0f,
+   0.0f,  1.0f,  0.0f, /* top    */
+   0.0f,  1.0f,  0.0f,
+   0.0f,  1.0f,  0.0f,
+   0.0f,  1.0f,  0.0f,
+  -1.0f,  0.0f,  0.0f, /* left   */
+  -1.0f,  0.0f,  0.0f,
+  -1.0f,  0.0f,  0.0f,
+  -1.0f,  0.0f,  0.0f,
+   0.0f, -1.0f,  0.0f, /* bottom */
+   0.0f, -1.0f,  0.0f,
+   0.0f, -1.0f,  0.0f,
+   0.0f, -1.0f,  0.0f
 };
 
 static const GLuint _indices[] = {
-  0, 1, 2,
-  2, 1, 3,
-  2, 3, 4,
-  4, 3, 5,
-  4, 5, 6,
-  6, 5, 7,
-  6, 7, 0,
-  0, 7, 1,
-  2, 4, 0,
-  0, 4, 6,
-  5, 3, 7,
-  7, 3, 1
+   0,  1,  2,  0,  2,  3, /* front  */
+   4,  5,  6,  4,  6,  7, /* back   */
+   8,  9, 10,  8, 10, 11, /* right  */
+  12, 13, 14, 12, 14, 15, /* top    */
+  16, 17, 18, 16, 18, 19, /* left   */
+  20, 21, 22, 20, 22, 23  /* bottom */
 };
 
 static oxcart_module_t _m = {0};
@@ -89,11 +130,9 @@ static oxcart_module_t _m = {0};
 /**
  * 
  */
-oxcart_cube_t* oxcart_cube_create(const oxcart_vec4_t* color)
+oxcart_cube_t* oxcart_cube_create()
 {
   oxcart_cube_t* cube;
-
-  OXCART_ASSERT(color);
 
   _module_initialize();
 
@@ -101,7 +140,8 @@ oxcart_cube_t* oxcart_cube_create(const oxcart_vec4_t* color)
     OXCART_ASSERT(!"malloc() failed");
   }
 
-  cube->color = *color;
+  cube->color = oxcart_vec4_set(1.0f, 1.0f, 0.0f, 1.0f);
+  cube->light = oxcart_vec3_set(0.0f, 0.0f, 0.0f);
 
   glGenVertexArrays(1, &cube->vao);
   glBindVertexArray(cube->vao);
@@ -111,6 +151,12 @@ oxcart_cube_t* oxcart_cube_create(const oxcart_vec4_t* color)
   glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices), _vertices, GL_STATIC_DRAW);
   glVertexAttribPointer(_m.shader.vertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
   glEnableVertexAttribArray(_m.shader.vertex);
+
+  glGenBuffers(1, &cube->nbo);
+  glBindBuffer(GL_ARRAY_BUFFER, cube->nbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(_normals), _normals, GL_STATIC_DRAW);
+  glVertexAttribPointer(_m.shader.normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(_m.shader.normal);
 
   glGenBuffers(1, &cube->ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube->ibo);
@@ -140,15 +186,12 @@ void oxcart_cube_draw(oxcart_cube_t* cube, const oxcart_mat4_t* model)
   OXCART_ASSERT(cube);
   OXCART_ASSERT(model);
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
   glUseProgram(_m.shader.program);
   glUniformMatrix4fv(_m.shader.model, 1, GL_FALSE, model->d);
   glUniform4fv(_m.shader.color, 1, cube->color.d);
+  glUniform3fv(_m.shader.light, 1, cube->light.d);
   glBindVertexArray(cube->vao);
   glDrawElements(GL_TRIANGLES, OXCART_ARRAY_SIZE(_indices), GL_UNSIGNED_INT, 0);
-
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 /**
@@ -177,10 +220,12 @@ static void _module_loadshader()
   _m.shader.program = oxcart_shader_link(shader, OXCART_ARRAY_SIZE(shader));
 
   _m.shader.camera = glGetUniformBlockIndex(_m.shader.program, "camera");
-  glUniformBlockBinding(_m.shader.program, _m.shader.camera, OXCART_SHADER_BINDPOINT_PERSP_CAMERA);
+  glUniformBlockBinding(_m.shader.program, _m.shader.camera, OXCART_SHADER_BINDPOINT_CAMERA_PERSP);
   _m.shader.model = glGetUniformLocation(_m.shader.program, "model");
+  _m.shader.light = glGetUniformLocation(_m.shader.program, "light");
   _m.shader.color = glGetUniformLocation(_m.shader.program, "color");
   _m.shader.vertex = glGetAttribLocation(_m.shader.program, "vertex");
+  _m.shader.normal = glGetAttribLocation(_m.shader.program, "normal");
 
   oxcart_shader_destroy(shader, OXCART_ARRAY_SIZE(shader));
 }

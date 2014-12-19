@@ -93,10 +93,11 @@
       <AdditionalIncludeDirectories>$(ResDir)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>$(ToolsDir)7-zip\7z.exe a -tzip $(BinDir)$(Configuration)\oxcart.zip $(DatDir)*</Command>
+      <Command>$(BldDir)oxcart_ar.bat $(Configuration)</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>del $(BinDir)$(Configuration)\oxcart.zip</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>del $(BinDir)$(Configuration)\oxcart.zip</Command>
@@ -146,10 +147,11 @@
       <AdditionalIncludeDirectories>$(ResDir)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PreBuildEvent>
-      <Command>del $(BinDir)$(Configuration)\oxcart.zip</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>$(ToolsDir)7-zip\7z.exe a -tzip $(BinDir)$(Configuration)\oxcart.zip $(DatDir)*</Command>
+      <Command>$(BldDir)oxcart_ar.bat $(Configuration)</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>del $(BinDir)$(Configuration)\oxcart.zip</Command>

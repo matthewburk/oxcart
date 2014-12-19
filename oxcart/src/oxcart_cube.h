@@ -32,7 +32,7 @@ extern "C" {
 
 typedef struct oxcart_cube_t oxcart_cube_t;
 
-oxcart_cube_t* oxcart_cube_create(const oxcart_vec4_t* color);
+oxcart_cube_t* oxcart_cube_create();
 void oxcart_cube_destroy(oxcart_cube_t* cube);
 void oxcart_cube_draw(oxcart_cube_t* cube, const oxcart_mat4_t* model);
 

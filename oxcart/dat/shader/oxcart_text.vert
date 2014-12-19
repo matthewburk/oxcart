@@ -30,7 +30,7 @@ uniform camera {
 
 uniform mat4 model;
 
-in vec4 vertex;
+in vec2 vertex;
 in vec2 texcoord;
 in vec4 color;
 
@@ -42,7 +42,7 @@ out vec4 vs_color;
  */
 void main()
 {
-  gl_Position = projection * view * model * vertex;
   vs_texcoord = texcoord;
   vs_color = color;
+  gl_Position = projection * view * model * vec4(vertex, 0.0, 1.0);
 }
