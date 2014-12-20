@@ -25,14 +25,13 @@
 
 uniform vec4 color;
 uniform vec3 light;
+uniform vec3 albedo = vec3(0.8, 0.8, 0.8);
+uniform vec3 ambient = vec3(0.2, 0.2, 0.2);
 
 in vec3 vs_vertex;
 in vec3 vs_normal;
 
 out vec4 fs_color;
-
-uniform vec3 albedo = vec3(0.8, 0.8, 0.8);
-uniform vec3 ambient = vec3(0.2, 0.2, 0.2);
 
 /**
  * 
