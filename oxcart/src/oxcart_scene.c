@@ -33,8 +33,8 @@
 #include "oxcart_state.h"
 #include "oxcart_text.h"
 
-#define OXCART_UBO_ORTHO_CAMERA 0
-#define OXCART_UBO_PERSP_CAMERA 1
+#define OXCART_UBO_CAMERA_ORTHO 0
+#define OXCART_UBO_CAMERA_PERSP 1
 
 typedef struct oxcart_camera_t oxcart_camera_t;
 typedef struct oxcart_module_t oxcart_module_t;
@@ -78,20 +78,20 @@ void oxcart_scene_initialize()
 
   /* setup orthographic uniform buffer */
   _m.ortho.view = oxcart_mat4_identity();
-  glGenBuffers(1, &_m.ubo[OXCART_UBO_ORTHO_CAMERA]);
-  glBindBuffer(GL_UNIFORM_BUFFER, _m.ubo[OXCART_UBO_ORTHO_CAMERA]);
+  glGenBuffers(1, &_m.ubo[OXCART_UBO_CAMERA_ORTHO]);
+  glBindBuffer(GL_UNIFORM_BUFFER, _m.ubo[OXCART_UBO_CAMERA_ORTHO]);
   glBufferData(GL_UNIFORM_BUFFER, sizeof(oxcart_camera_t), &_m.ortho, GL_DYNAMIC_DRAW);
-  glBindBufferBase(GL_UNIFORM_BUFFER, OXCART_SHADER_BINDPOINT_CAMERA_ORTHO, _m.ubo[OXCART_UBO_ORTHO_CAMERA]);
+  glBindBufferBase(GL_UNIFORM_BUFFER, OXCART_SHADER_BINDPOINT_CAMERA_ORTHO, _m.ubo[OXCART_UBO_CAMERA_ORTHO]);
 
   /* setup perspective uniform buffer */
   eye = oxcart_vec3_set(0.0f, 0.0f, 0.0f);
   target = oxcart_vec3_set(0.0f, 0.0f, -1.0f);
   up = oxcart_vec3_set(0.0f, 1.0f, 0.0f);
   _m.persp.view = oxcart_mat4_lookat(&eye, &target, &up);
-  glGenBuffers(1, &_m.ubo[OXCART_UBO_PERSP_CAMERA]);
-  glBindBuffer(GL_UNIFORM_BUFFER, _m.ubo[OXCART_UBO_PERSP_CAMERA]);
+  glGenBuffers(1, &_m.ubo[OXCART_UBO_CAMERA_PERSP]);
+  glBindBuffer(GL_UNIFORM_BUFFER, _m.ubo[OXCART_UBO_CAMERA_PERSP]);
   glBufferData(GL_UNIFORM_BUFFER, sizeof(oxcart_camera_t), &_m.persp, GL_DYNAMIC_DRAW);
-  glBindBufferBase(GL_UNIFORM_BUFFER, OXCART_SHADER_BINDPOINT_CAMERA_PERSP, _m.ubo[OXCART_UBO_PERSP_CAMERA]);
+  glBindBufferBase(GL_UNIFORM_BUFFER, OXCART_SHADER_BINDPOINT_CAMERA_PERSP, _m.ubo[OXCART_UBO_CAMERA_PERSP]);
 
   /* initialize the viewport */
   oxcart_window_rect(&x, &y, &w, &h);
@@ -117,8 +117,8 @@ void oxcart_scene_terminate()
 {
   oxcart_text_destroy(_m.text);
   oxcart_cube_destroy(_m.cube);
-  glDeleteBuffers(1, &_m.ubo[OXCART_UBO_PERSP_CAMERA]);
-  glDeleteBuffers(1, &_m.ubo[OXCART_UBO_ORTHO_CAMERA]);
+  glDeleteBuffers(1, &_m.ubo[OXCART_UBO_CAMERA_PERSP]);
+  glDeleteBuffers(1, &_m.ubo[OXCART_UBO_CAMERA_ORTHO]);
 }
 
 /**
@@ -132,11 +132,11 @@ void oxcart_scene_setviewport(int w, int h)
   glViewport(0, 0, w, h);
 
   _m.ortho.projection = oxcart_mat4_orthographic((float)w, (float)h);
-  glBindBuffer(GL_UNIFORM_BUFFER, _m.ubo[OXCART_UBO_ORTHO_CAMERA]);
+  glBindBuffer(GL_UNIFORM_BUFFER, _m.ubo[OXCART_UBO_CAMERA_ORTHO]);
   glBufferSubData(GL_UNIFORM_BUFFER, OXCART_OFFSET(oxcart_camera_t, projection), sizeof(oxcart_mat4_t), _m.ortho.projection.d);
 
   _m.persp.projection = oxcart_mat4_perspective(45.0f, (float)w / (float)h, 0.1f, 1000.0f);
-  glBindBuffer(GL_UNIFORM_BUFFER, _m.ubo[OXCART_UBO_PERSP_CAMERA]);
+  glBindBuffer(GL_UNIFORM_BUFFER, _m.ubo[OXCART_UBO_CAMERA_PERSP]);
   glBufferSubData(GL_UNIFORM_BUFFER, OXCART_OFFSET(oxcart_camera_t, projection), sizeof(oxcart_mat4_t), _m.persp.projection.d);
 }
 

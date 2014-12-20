@@ -23,9 +23,12 @@
 
 @rem oxcart archiver
 
+@echo OFF
 @setlocal ENABLEDELAYEDEXPANSION
 
+@set MYDEL=del
 @set MYZIP=..\tools\7-zip\7z.exe a -tzip
+@set MYBIN=..\bin
 @set MYCNF=
 @set MYOUT=oxcart.zip
 @set MYDAT=..\dat\*
@@ -57,7 +60,9 @@
 @goto :OK_BUILD
 
 :OK_BUILD
-%MYZIP% ..\bin\%MYCNF%\%MYOUT% %MYDAT%
+%MYDEL% %MYBIN%\%MYCNF%\%MYOUT%
+@if errorlevel 1 goto :FAILED
+%MYZIP% %MYBIN%\%MYCNF%\%MYOUT% %MYDAT%
 @if errorlevel 1 goto :FAILED
 @goto :SUCCESS
 
