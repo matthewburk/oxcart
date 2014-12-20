@@ -351,7 +351,6 @@ void oxcart_text_draw(oxcart_text_t* text, const oxcart_mat4_t* model)
 
   glUseProgram(_m.shader.program);
   glUniformMatrix4fv(_m.shader.model, 1, GL_FALSE, model->d);
-  glUniform1i(_m.shader.sampler, 0);
 
   glBindVertexArray(text->vao);
   glBindTexture(GL_TEXTURE_2D, text->tex);
@@ -517,14 +516,15 @@ static void _module_loadshader()
   shader[0] = oxcart_shader_createwithfile("/shader/oxcart_text.vert", GL_VERTEX_SHADER);
   shader[1] = oxcart_shader_createwithfile("/shader/oxcart_text.frag", GL_FRAGMENT_SHADER);
   _m.shader.program = oxcart_shader_link(shader, OXCART_ARRAY_SIZE(shader));
+  oxcart_shader_destroy(shader, OXCART_ARRAY_SIZE(shader));
 
   _m.shader.camera = glGetUniformBlockIndex(_m.shader.program, "camera");
-  glUniformBlockBinding(_m.shader.program, _m.shader.camera, OXCART_SHADER_BINDPOINT_CAMERA_ORTHO);
   _m.shader.model = glGetUniformLocation(_m.shader.program, "model");
   _m.shader.sampler = glGetUniformLocation(_m.shader.program, "sampler");
   _m.shader.vertex = glGetAttribLocation(_m.shader.program, "vertex");
   _m.shader.texcoord = glGetAttribLocation(_m.shader.program, "texcoord");
   _m.shader.color = glGetAttribLocation(_m.shader.program, "color");
 
-  oxcart_shader_destroy(shader, OXCART_ARRAY_SIZE(shader));
+  glUniformBlockBinding(_m.shader.program, _m.shader.camera, OXCART_SHADER_BINDPOINT_CAMERA_ORTHO);
+  glUniform1i(_m.shader.sampler, 0);
 }

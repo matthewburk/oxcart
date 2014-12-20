@@ -22,6 +22,7 @@
  */
 
 #version 400 core
+layout (std140) uniform;
 
 uniform vec4 color;
 uniform vec3 light;

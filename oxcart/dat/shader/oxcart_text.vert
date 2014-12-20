@@ -22,8 +22,9 @@
  */
 
 #version 400 core
+layout (std140) uniform;
 
-layout (std140) uniform camera {
+uniform camera {
   mat4 projection;
   mat4 view;
 };

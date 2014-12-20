@@ -218,14 +218,14 @@ static void _module_loadshader()
   shader[0] = oxcart_shader_createwithfile("/shader/oxcart_cube.vert", GL_VERTEX_SHADER);
   shader[1] = oxcart_shader_createwithfile("/shader/oxcart_cube.frag", GL_FRAGMENT_SHADER);
   _m.shader.program = oxcart_shader_link(shader, OXCART_ARRAY_SIZE(shader));
+  oxcart_shader_destroy(shader, OXCART_ARRAY_SIZE(shader));
 
   _m.shader.camera = glGetUniformBlockIndex(_m.shader.program, "camera");
-  glUniformBlockBinding(_m.shader.program, _m.shader.camera, OXCART_SHADER_BINDPOINT_CAMERA_PERSP);
   _m.shader.model = glGetUniformLocation(_m.shader.program, "model");
   _m.shader.light = glGetUniformLocation(_m.shader.program, "light");
   _m.shader.color = glGetUniformLocation(_m.shader.program, "color");
   _m.shader.vertex = glGetAttribLocation(_m.shader.program, "vertex");
   _m.shader.normal = glGetAttribLocation(_m.shader.program, "normal");
 
-  oxcart_shader_destroy(shader, OXCART_ARRAY_SIZE(shader));
+  glUniformBlockBinding(_m.shader.program, _m.shader.camera, OXCART_SHADER_BINDPOINT_CAMERA_PERSP);
 }

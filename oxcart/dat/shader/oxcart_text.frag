@@ -22,6 +22,7 @@
  */
 
 #version 400 core
+layout (std140) uniform;
 
 uniform sampler2D sampler;
 
