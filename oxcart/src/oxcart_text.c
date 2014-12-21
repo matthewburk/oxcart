@@ -450,10 +450,6 @@ static void _module_loadconfig()
   L = oxcart_lua_newstate();
 
   if (OXCART_LUA_DOFILE(L, "/config/oxcart_text.lua")) {
-    #ifdef _DEBUG
-      fprintf_s(stderr, "%s\n", lua_tostring(L, -1));
-    #endif
-
     OXCART_ASSERT(!"OXCART_LUA_DOFILE() failed");
   }
 

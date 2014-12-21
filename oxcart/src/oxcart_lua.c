@@ -26,18 +26,19 @@
 #include "oxcart_assert.h"
 #include "oxcart_lua.h"
 
-typedef struct oxcart_rdata_t oxcart_rdata_t;
+typedef struct oxcart_fdata_t oxcart_fdata_t;
 
-struct oxcart_rdata_t
+struct oxcart_fdata_t
 {
   PHYSFS_file* file;
   char buffer[LUAL_BUFFERSIZE];
 };
 
 static void _lua_doexpr(lua_State* L, const char* expr);
+static int _lua_traceback(lua_State* L);
 static int _lua_searcher(lua_State* L);
 static int _lua_loadfile(lua_State* L);
-static const char* _lua_reader(lua_State* L, void* data, size_t* size);
+static const char* _lua_freader(lua_State* L, void* data, size_t* size);
 
 /**
  * 
@@ -52,6 +53,9 @@ lua_State* oxcart_lua_newstate()
   }
 
   luaL_openlibs(L);
+
+  lua_pushcfunction(L, _lua_traceback);
+  lua_setglobal(L, "_lua_traceback");
 
   lua_getglobal(L, "package");
   if (!lua_istable(L, -1)) {
@@ -80,6 +84,39 @@ lua_State* oxcart_lua_newstate()
 /**
  * 
  */
+int oxcart_lua_pcall(lua_State* L, int nargs, int nresults)
+{
+  int index;
+  int status;
+
+  OXCART_ASSERT(L);
+
+  index = lua_gettop(L) - nargs;
+
+  lua_getglobal(L, "_lua_traceback");
+  if (!lua_isfunction(L, -1)) {
+    OXCART_ASSERT(!"lua_isfunction() failed");
+  }
+
+  /* put _lua_traceback under chunk and args */
+  lua_insert(L, index);
+  status = lua_pcall(L, nargs, nresults, index);
+  lua_remove(L, index);
+
+  if (status) {
+    #ifdef _DEBUG
+      fprintf_s(stderr, "%s\n", lua_tostring(L, -1));
+    #endif
+
+    lua_pop(L, 1);
+  }
+
+  return(status);
+}
+
+/**
+ * 
+ */
 int oxcart_lua_loadfile(lua_State* L, const char* filename)
 {
   OXCART_ASSERT(L);
@@ -88,11 +125,7 @@ int oxcart_lua_loadfile(lua_State* L, const char* filename)
   lua_pushcfunction(L, _lua_loadfile);
   lua_pushstring(L, filename);
 
-  if (lua_pcall(L, 1, 1, 0)) {
-    #ifdef _DEBUG
-      fprintf_s(stderr, "%s\n", lua_tostring(L, -1));
-    #endif
-
+  if (oxcart_lua_pcall(L, 1, 1)) {
     return(1);
   }
 
@@ -195,13 +228,37 @@ static void _lua_doexpr(lua_State* L, const char* expr)
 
   sprintf_s(buffer, LUAL_BUFFERSIZE, "return(%s)", expr);
 
-  if (luaL_dostring(L, buffer)) {
-    #ifdef _DEBUG
-      fprintf_s(stderr, "%s\n", lua_tostring(L, -1));
-    #endif
-
-    OXCART_ASSERT(!"luaL_dostring() failed");
+  if (OXCART_LUA_DOSTRING(L, buffer)) {
+    OXCART_ASSERT(!"OXCART_LUA_DOSTRING() failed");
   }
+}
+
+/**
+ * 
+ */
+static int _lua_traceback(lua_State* L)
+{
+  if (!lua_isstring(L, 1)) {
+    return(1);
+  }
+
+  lua_getglobal(L, "debug");
+  if (!lua_istable(L, -1)) {
+    lua_pop(L, 1);
+    return(1);
+  }
+
+  lua_getfield(L, -1, "traceback");
+  if (!lua_isfunction(L, -1)) {
+    lua_pop(L, 2);
+    return(1);
+  }
+
+  lua_pushvalue(L, 1);   /* pass error message */
+  lua_pushinteger(L, 2); /* skip this function and traceback */
+  lua_call(L, 2, 1);     /* call debug.traceback */
+
+  return(1);
 }
 
 /**
@@ -232,18 +289,18 @@ static int _lua_loadfile(lua_State* L)
 {
   int status;
   const char* filename;
-  oxcart_rdata_t rdata;
+  oxcart_fdata_t fdata;
 
   if (!(filename = luaL_checkstring(L, 1))) {
     return(lua_error(L));
   }
 
-  if (!(rdata.file = PHYSFS_openRead(filename))) {
+  if (!(fdata.file = PHYSFS_openRead(filename))) {
     return(luaL_error(L, "%s: %s", filename, PHYSFS_getLastError()));
   }
 
-  status = lua_load(L, _lua_reader, &rdata, filename);
-  PHYSFS_close(rdata.file);
+  status = lua_load(L, _lua_freader, &fdata, filename);
+  PHYSFS_close(fdata.file);
 
   if (status) {
     return(lua_error(L));
@@ -255,16 +312,16 @@ static int _lua_loadfile(lua_State* L)
 /**
  * 
  */
-static const char* _lua_reader(lua_State* L, void* data, size_t* size)
+static const char* _lua_freader(lua_State* L, void* data, size_t* size)
 {
   PHYSFS_sint64 count;
-  oxcart_rdata_t* rdata = (oxcart_rdata_t*)data;
+  oxcart_fdata_t* fdata = (oxcart_fdata_t*)data;
 
-  if (0 >= (count = PHYSFS_read(rdata->file, rdata->buffer, 1, LUAL_BUFFERSIZE))) {
+  if (0 >= (count = PHYSFS_read(fdata->file, fdata->buffer, 1, LUAL_BUFFERSIZE))) {
     *size = 0;
     return(0);
   }
 
   *size = (size_t)count;
-  return(rdata->buffer);
+  return(fdata->buffer);
 }
