@@ -42,11 +42,10 @@ out vec3 vs_normal;
  */
 void main()
 {
-  mat4 mv = view * model;
-  vec4 v = mv * vec4(vertex, 1.0);
-  vec4 n = mv * vec4(normal, 0.0);
+  vec4 v = model * vec4(vertex, 1.0);
+  vec4 n = model * vec4(normal, 0.0);
 
   vs_vertex = v.xyz;
   vs_normal = n.xyz;
-  gl_Position = projection * v;
+  gl_Position = projection * view * v;
 }
