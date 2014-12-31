@@ -345,17 +345,9 @@ void oxcart_text_draw(oxcart_text_t* text, const oxcart_mat4_t* model)
   OXCART_ASSERT(text);
   OXCART_ASSERT(model);
 
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-  glUseProgram(_m.shader.program);
-  glUniformMatrix4fv(_m.shader.model, 1, GL_FALSE, model->d);
-
-  glBindVertexArray(text->vao);
-  glBindTexture(GL_TEXTURE_2D, text->tex);
-
   if (text->changed) {
+    glBindBuffer(GL_ARRAY_BUFFER, text->vbo);
+
     if (text->vcapacity != oxcart_vector_capacity(text->vertices)) {
       text->vcapacity = oxcart_vector_capacity(text->vertices);
       glBufferData(GL_ARRAY_BUFFER, text->vcapacity * sizeof(oxcart_vertex_t), oxcart_vector_front(text->vertices), GL_DYNAMIC_DRAW);
@@ -363,6 +355,8 @@ void oxcart_text_draw(oxcart_text_t* text, const oxcart_mat4_t* model)
     else {
       glBufferSubData(GL_ARRAY_BUFFER, 0, oxcart_vector_size(text->vertices) * sizeof(oxcart_vertex_t), oxcart_vector_front(text->vertices));
     }
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, text->ibo);
 
     if (text->icapacity != oxcart_vector_capacity(text->indices)) {
       text->icapacity = oxcart_vector_capacity(text->indices);
@@ -375,6 +369,14 @@ void oxcart_text_draw(oxcart_text_t* text, const oxcart_mat4_t* model)
     text->changed = 0;
   }
 
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+  glUseProgram(_m.shader.program);
+  glUniformMatrix4fv(_m.shader.model, 1, GL_FALSE, model->d);
+  glBindVertexArray(text->vao);
+  glBindTexture(GL_TEXTURE_2D, text->tex);
   glDrawElements(GL_TRIANGLES, oxcart_vector_size(text->indices), GL_UNSIGNED_INT, 0);
 }
 
