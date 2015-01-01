@@ -155,7 +155,7 @@ void oxcart_scene_draw(float coeff)
   angle = (g_state.next_ang - g_state.prev_ang) * coeff;
   angle += g_state.prev_ang;
   rotate = oxcart_mat4_rotate(0.5f, 1.0f, 0.0f, angle);
-  translate = oxcart_mat4_translate(0.0f, 0.0f, -10.0f);
+  translate = oxcart_mat4_translate(0.0f, 0.0f, -20.0f);
   model = oxcart_mat4_multiply(&translate, &rotate);
   oxcart_cube_draw(_m.cube, &model);
 
