@@ -142,6 +142,7 @@ OXCART_INLINE oxcart_mat3_t OXCART_VCALL oxcart_mat3_scale(float x, float y);
 OXCART_INLINE oxcart_mat3_t OXCART_VCALL oxcart_mat3_scalev(const oxcart_vec2_t* v1);
 OXCART_INLINE oxcart_mat3_t OXCART_VCALL oxcart_mat3_multiply(const oxcart_mat3_t* m1, const oxcart_mat3_t* m2);
 OXCART_INLINE oxcart_mat3_t OXCART_VCALL oxcart_mat3_transpose(const oxcart_mat3_t* m1);
+OXCART_INLINE float OXCART_VCALL oxcart_mat3_determinant(const oxcart_mat3_t* m1);
 
 OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_identity();
 OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_rotate(float x, float y, float z, float angle);
@@ -152,6 +153,7 @@ OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_scale(float x, float y, flo
 OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_scalev(const oxcart_vec3_t* v1);
 OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_multiply(const oxcart_mat4_t* m1, const oxcart_mat4_t* m2);
 OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_transpose(const oxcart_mat4_t* m1);
+OXCART_INLINE float OXCART_VCALL oxcart_mat4_determinant(const oxcart_mat4_t* m1);
 OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_orthographic(float w, float h);
 OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_perspective(float fovy, float aspect, float n, float f);
 OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_lookat(const oxcart_vec3_t* eye, const oxcart_vec3_t* target, const oxcart_vec3_t* up);

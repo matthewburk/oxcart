@@ -982,6 +982,22 @@ OXCART_INLINE oxcart_mat3_t OXCART_VCALL oxcart_mat3_transpose(const oxcart_mat3
 /**
  * 
  */
+OXCART_INLINE float OXCART_VCALL oxcart_mat3_determinant(const oxcart_mat3_t* m1)
+{
+  oxcart_vec3_t vec3;
+
+  OXCART_ASSERT(m1);
+
+  vec3.d[0] = m1->d[0] * ((m1->d[8] * m1->d[4]) - (m1->d[7] * m1->d[5]));
+  vec3.d[1] = m1->d[3] * ((m1->d[8] * m1->d[1]) - (m1->d[7] * m1->d[2]));
+  vec3.d[2] = m1->d[6] * ((m1->d[5] * m1->d[1]) - (m1->d[4] * m1->d[2]));
+
+  return(vec3.d[0] - vec3.d[1] + vec3.d[2]);
+}
+
+/**
+ * 
+ */
 OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_identity()
 {
   oxcart_mat4_t mat4 = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
@@ -1192,6 +1208,31 @@ OXCART_INLINE oxcart_mat4_t OXCART_VCALL oxcart_mat4_transpose(const oxcart_mat4
   mat4.d[15] = m1->d[15];
 
   return(mat4);
+}
+
+/**
+ * 
+ */
+OXCART_INLINE float OXCART_VCALL oxcart_mat4_determinant(const oxcart_mat4_t* m1)
+{
+  float subfactor[6];
+  oxcart_vec4_t vec4;
+
+  OXCART_ASSERT(m1);
+
+  subfactor[0] = (m1->d[10] * m1->d[15]) - (m1->d[14] * m1->d[11]);
+  subfactor[1] = (m1->d[ 9] * m1->d[15]) - (m1->d[13] * m1->d[11]);
+  subfactor[2] = (m1->d[ 9] * m1->d[14]) - (m1->d[13] * m1->d[10]);
+  subfactor[3] = (m1->d[ 8] * m1->d[15]) - (m1->d[12] * m1->d[11]);
+  subfactor[4] = (m1->d[ 8] * m1->d[14]) - (m1->d[12] * m1->d[10]);
+  subfactor[5] = (m1->d[ 8] * m1->d[13]) - (m1->d[12] * m1->d[ 9]);
+
+  vec4.d[0] = +((m1->d[5] * subfactor[0]) - (m1->d[6] * subfactor[1]) + (m1->d[7] * subfactor[2]));
+  vec4.d[1] = -((m1->d[4] * subfactor[0]) - (m1->d[6] * subfactor[3]) + (m1->d[7] * subfactor[4]));
+  vec4.d[2] = +((m1->d[4] * subfactor[1]) - (m1->d[5] * subfactor[3]) + (m1->d[7] * subfactor[5]));
+  vec4.d[3] = -((m1->d[4] * subfactor[2]) - (m1->d[5] * subfactor[4]) + (m1->d[6] * subfactor[5]));
+
+  return((m1->d[0] * vec4.d[0]) + (m1->d[1] * vec4.d[1]) + (m1->d[2] * vec4.d[2]) + (m1->d[3] * vec4.d[3]));
 }
 
 /**
