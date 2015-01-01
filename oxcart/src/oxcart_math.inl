@@ -1227,12 +1227,12 @@ OXCART_INLINE float OXCART_VCALL oxcart_mat4_determinant(const oxcart_mat4_t* m1
   subfactor[4] = (m1->d[ 8] * m1->d[14]) - (m1->d[12] * m1->d[10]);
   subfactor[5] = (m1->d[ 8] * m1->d[13]) - (m1->d[12] * m1->d[ 9]);
 
-  vec4.d[0] = +((m1->d[5] * subfactor[0]) - (m1->d[6] * subfactor[1]) + (m1->d[7] * subfactor[2]));
-  vec4.d[1] = -((m1->d[4] * subfactor[0]) - (m1->d[6] * subfactor[3]) + (m1->d[7] * subfactor[4]));
-  vec4.d[2] = +((m1->d[4] * subfactor[1]) - (m1->d[5] * subfactor[3]) + (m1->d[7] * subfactor[5]));
-  vec4.d[3] = -((m1->d[4] * subfactor[2]) - (m1->d[5] * subfactor[4]) + (m1->d[6] * subfactor[5]));
+  vec4.d[0] = (m1->d[5] * subfactor[0]) - (m1->d[6] * subfactor[1]) + (m1->d[7] * subfactor[2]);
+  vec4.d[1] = (m1->d[4] * subfactor[0]) - (m1->d[6] * subfactor[3]) + (m1->d[7] * subfactor[4]);
+  vec4.d[2] = (m1->d[4] * subfactor[1]) - (m1->d[5] * subfactor[3]) + (m1->d[7] * subfactor[5]);
+  vec4.d[3] = (m1->d[4] * subfactor[2]) - (m1->d[5] * subfactor[4]) + (m1->d[6] * subfactor[5]);
 
-  return((m1->d[0] * vec4.d[0]) + (m1->d[1] * vec4.d[1]) + (m1->d[2] * vec4.d[2]) + (m1->d[3] * vec4.d[3]));
+  return((m1->d[0] * vec4.d[0]) - (m1->d[1] * vec4.d[1]) + (m1->d[2] * vec4.d[2]) - (m1->d[3] * vec4.d[3]));
 }
 
 /**
