@@ -49,8 +49,6 @@ struct oxcart_shader_t
   GLint model;
   GLint color;
   GLint light;
-  GLint vertex;
-  GLint normal;
 };
 
 struct oxcart_module_t
@@ -149,14 +147,14 @@ oxcart_cube_t* oxcart_cube_create()
   glGenBuffers(1, &cube->vbo);
   glBindBuffer(GL_ARRAY_BUFFER, cube->vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices), _vertices, GL_STATIC_DRAW);
-  glVertexAttribPointer(_m.shader.vertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(_m.shader.vertex);
+  glVertexAttribPointer(OXCART_SHADER_ATTRIBLOC_VERTEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(OXCART_SHADER_ATTRIBLOC_VERTEX);
 
   glGenBuffers(1, &cube->nbo);
   glBindBuffer(GL_ARRAY_BUFFER, cube->nbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(_normals), _normals, GL_STATIC_DRAW);
-  glVertexAttribPointer(_m.shader.normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(_m.shader.normal);
+  glVertexAttribPointer(OXCART_SHADER_ATTRIBLOC_NORMAL, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(OXCART_SHADER_ATTRIBLOC_NORMAL);
 
   glGenBuffers(1, &cube->ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube->ibo);
@@ -217,15 +215,18 @@ static void _module_loadshader()
 
   shader[0] = oxcart_shader_createwithfile("/shader/oxcart_cube.vert", GL_VERTEX_SHADER);
   shader[1] = oxcart_shader_createwithfile("/shader/oxcart_cube.frag", GL_FRAGMENT_SHADER);
-  _m.shader.program = oxcart_shader_link(shader, OXCART_ARRAY_SIZE(shader));
+  _m.shader.program = oxcart_program_create(shader, OXCART_ARRAY_SIZE(shader));
   oxcart_shader_destroy(shader, OXCART_ARRAY_SIZE(shader));
+
+  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIBLOC_VERTEX, "vertex");
+  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIBLOC_NORMAL, "normal");
+
+  oxcart_program_link(_m.shader.program);
 
   _m.shader.camera = glGetUniformBlockIndex(_m.shader.program, "camera");
   _m.shader.model = glGetUniformLocation(_m.shader.program, "model");
-  _m.shader.light = glGetUniformLocation(_m.shader.program, "light");
   _m.shader.color = glGetUniformLocation(_m.shader.program, "color");
-  _m.shader.vertex = glGetAttribLocation(_m.shader.program, "vertex");
-  _m.shader.normal = glGetAttribLocation(_m.shader.program, "normal");
+  _m.shader.light = glGetUniformLocation(_m.shader.program, "light");
 
   glUniformBlockBinding(_m.shader.program, _m.shader.camera, OXCART_SHADER_BINDPOINT_CAMERA_PERSP);
 }

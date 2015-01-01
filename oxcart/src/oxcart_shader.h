@@ -30,13 +30,20 @@
 extern "C" {
 #endif
 
+#define OXCART_SHADER_ATTRIBLOC_VERTEX       0
+#define OXCART_SHADER_ATTRIBLOC_NORMAL       1
+#define OXCART_SHADER_ATTRIBLOC_TEXCOORD     2
+#define OXCART_SHADER_ATTRIBLOC_COLOR        3
 #define OXCART_SHADER_BINDPOINT_CAMERA_ORTHO 0
 #define OXCART_SHADER_BINDPOINT_CAMERA_PERSP 1
 
 GLuint oxcart_shader_createwithfile(const GLchar* filename, GLenum type);
 GLuint oxcart_shader_createwithstr(const GLchar* str, GLenum type);
 void oxcart_shader_destroy(const GLuint* shader, GLsizei count);
-GLuint oxcart_shader_link(const GLuint* shader, GLsizei count);
+
+GLuint oxcart_program_create(const GLuint* shader, GLsizei count);
+void oxcart_program_destroy(GLuint program);
+void oxcart_program_link(GLuint program);
 
 #ifdef __cplusplus
 }

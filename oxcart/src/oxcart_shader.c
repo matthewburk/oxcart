@@ -115,11 +115,10 @@ void oxcart_shader_destroy(const GLuint* shader, GLsizei count)
 /**
  * 
  */
-GLuint oxcart_shader_link(const GLuint* shader, GLsizei count)
+GLuint oxcart_program_create(const GLuint* shader, GLsizei count)
 {
   GLsizei i;
   GLuint program;
-  GLint status;
 
   OXCART_ASSERT(shader);
   OXCART_ASSERT(count > 0);
@@ -131,6 +130,24 @@ GLuint oxcart_shader_link(const GLuint* shader, GLsizei count)
   for (i = 0; i < count; i++) {
     glAttachShader(program, shader[i]);
   }
+
+  return(program);
+}
+
+/**
+ * 
+ */
+void oxcart_program_destroy(GLuint program)
+{
+  glDeleteProgram(program);
+}
+
+/**
+ * 
+ */
+void oxcart_program_link(GLuint program)
+{
+  GLint status;
 
   glLinkProgram(program);
   glGetProgramiv(program, GL_LINK_STATUS, &status);
@@ -144,6 +161,4 @@ GLuint oxcart_shader_link(const GLuint* shader, GLsizei count)
 
     OXCART_ASSERT(!"GL_LINK_STATUS failed");
   }
-
-  return(program);
 }
