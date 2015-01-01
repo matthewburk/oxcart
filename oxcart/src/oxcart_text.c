@@ -119,12 +119,12 @@ oxcart_text_t* oxcart_text_create()
   glGenBuffers(1, &text->vbo);
   glBindBuffer(GL_ARRAY_BUFFER, text->vbo);
   glBufferData(GL_ARRAY_BUFFER, text->vcapacity * sizeof(oxcart_vertex_t), 0, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(OXCART_SHADER_ATTRIBLOC_VERTEX, 2, GL_FLOAT, GL_FALSE, sizeof(oxcart_vertex_t), OXCART_OFFSET_PTR(oxcart_vertex_t, vertex));
-  glEnableVertexAttribArray(OXCART_SHADER_ATTRIBLOC_VERTEX);
-  glVertexAttribPointer(OXCART_SHADER_ATTRIBLOC_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(oxcart_vertex_t), OXCART_OFFSET_PTR(oxcart_vertex_t, texcoord));
-  glEnableVertexAttribArray(OXCART_SHADER_ATTRIBLOC_TEXCOORD);
-  glVertexAttribPointer(OXCART_SHADER_ATTRIBLOC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(oxcart_vertex_t), OXCART_OFFSET_PTR(oxcart_vertex_t, color));
-  glEnableVertexAttribArray(OXCART_SHADER_ATTRIBLOC_COLOR);
+  glVertexAttribPointer(OXCART_SHADER_ATTRIB_LOCATION_VERTEX, 2, GL_FLOAT, GL_FALSE, sizeof(oxcart_vertex_t), OXCART_OFFSET_PTR(oxcart_vertex_t, vertex));
+  glEnableVertexAttribArray(OXCART_SHADER_ATTRIB_LOCATION_VERTEX);
+  glVertexAttribPointer(OXCART_SHADER_ATTRIB_LOCATION_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(oxcart_vertex_t), OXCART_OFFSET_PTR(oxcart_vertex_t, texcoord));
+  glEnableVertexAttribArray(OXCART_SHADER_ATTRIB_LOCATION_TEXCOORD);
+  glVertexAttribPointer(OXCART_SHADER_ATTRIB_LOCATION_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(oxcart_vertex_t), OXCART_OFFSET_PTR(oxcart_vertex_t, color));
+  glEnableVertexAttribArray(OXCART_SHADER_ATTRIB_LOCATION_COLOR);
 
   glGenBuffers(1, &text->ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, text->ibo);
@@ -513,9 +513,9 @@ static void _module_loadshader()
   _m.shader.program = oxcart_program_create(shader, OXCART_ARRAY_SIZE(shader));
   oxcart_shader_destroy(shader, OXCART_ARRAY_SIZE(shader));
 
-  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIBLOC_VERTEX, "vertex");
-  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIBLOC_TEXCOORD, "texcoord");
-  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIBLOC_COLOR, "color");
+  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIB_LOCATION_VERTEX, "vertex");
+  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIB_LOCATION_TEXCOORD, "texcoord");
+  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIB_LOCATION_COLOR, "color");
 
   oxcart_program_link(_m.shader.program);
 

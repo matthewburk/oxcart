@@ -147,14 +147,14 @@ oxcart_cube_t* oxcart_cube_create()
   glGenBuffers(1, &cube->vbo);
   glBindBuffer(GL_ARRAY_BUFFER, cube->vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(_vertices), _vertices, GL_STATIC_DRAW);
-  glVertexAttribPointer(OXCART_SHADER_ATTRIBLOC_VERTEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(OXCART_SHADER_ATTRIBLOC_VERTEX);
+  glVertexAttribPointer(OXCART_SHADER_ATTRIB_LOCATION_VERTEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(OXCART_SHADER_ATTRIB_LOCATION_VERTEX);
 
   glGenBuffers(1, &cube->nbo);
   glBindBuffer(GL_ARRAY_BUFFER, cube->nbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(_normals), _normals, GL_STATIC_DRAW);
-  glVertexAttribPointer(OXCART_SHADER_ATTRIBLOC_NORMAL, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(OXCART_SHADER_ATTRIBLOC_NORMAL);
+  glVertexAttribPointer(OXCART_SHADER_ATTRIB_LOCATION_NORMAL, 3, GL_FLOAT, GL_FALSE, 0, 0);
+  glEnableVertexAttribArray(OXCART_SHADER_ATTRIB_LOCATION_NORMAL);
 
   glGenBuffers(1, &cube->ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube->ibo);
@@ -218,8 +218,8 @@ static void _module_loadshader()
   _m.shader.program = oxcart_program_create(shader, OXCART_ARRAY_SIZE(shader));
   oxcart_shader_destroy(shader, OXCART_ARRAY_SIZE(shader));
 
-  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIBLOC_VERTEX, "vertex");
-  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIBLOC_NORMAL, "normal");
+  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIB_LOCATION_VERTEX, "vertex");
+  glBindAttribLocation(_m.shader.program, OXCART_SHADER_ATTRIB_LOCATION_NORMAL, "normal");
 
   oxcart_program_link(_m.shader.program);
 
