@@ -75,7 +75,7 @@ OXCART_INLINE oxcart_markup_t oxcart_markup_defaults()
 {
   oxcart_markup_t markup;
 
-  markup.name = "firasans";
+  markup.name = "firamono";
   markup.size = 16;
   markup.style = OXCART_TEXT_STYLE_REGULAR;
   markup.line = 0.0f;

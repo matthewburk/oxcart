@@ -21,6 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <stdio.h>
 #include "oxcart_assert.h"
 #include "oxcart_app.h"
 #include "oxcart_atlas.h"
@@ -32,6 +33,7 @@
 #include "oxcart_shader.h"
 #include "oxcart_state.h"
 #include "oxcart_text.h"
+#include "oxcart_util.h"
 
 #define OXCART_UBO_CAMERA_ORTHO 0
 #define OXCART_UBO_CAMERA_PERSP 1
@@ -47,12 +49,15 @@ struct oxcart_camera_t
 
 struct oxcart_module_t
 {
+  size_t past;
+  size_t osec;
+  size_t fps;
+  size_t frames;
   GLuint ubo[2];
   oxcart_camera_t ortho;
   oxcart_camera_t persp;
   oxcart_cube_t* cube;
   oxcart_text_t* text;
-  oxcart_metrics_t metrics;
 };
 
 static oxcart_module_t _m = {0};
@@ -66,9 +71,6 @@ void oxcart_scene_initialize()
   oxcart_vec3_t eye;
   oxcart_vec3_t target;
   oxcart_vec3_t up;
-  oxcart_markup_t markup;
-  oxcart_vec2_t pen;
-  const char* str = "The quick brown fox jumps over the lazy dog. 0123456789";
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
@@ -101,13 +103,7 @@ void oxcart_scene_initialize()
   _m.cube = oxcart_cube_create();
 
   /* create text */
-  markup = oxcart_markup_defaults();
-  markup.size = 22;
-  markup.style = OXCART_TEXT_STYLE_BOLD_ITALIC;
-  pen = oxcart_vec2_zero();
   _m.text = oxcart_text_create();
-  oxcart_text_metrics(_m.text, &markup, str, 0, &_m.metrics);
-  oxcart_text_assign(_m.text, &markup, str, 0, &pen);
 }
 
 /**
@@ -146,9 +142,26 @@ void oxcart_scene_setviewport(int w, int h)
 void oxcart_scene_draw(float coeff)
 {
   float angle;
+  size_t now;
+  size_t elapsed;
   oxcart_mat4_t rotate;
   oxcart_mat4_t translate;
   oxcart_mat4_t model;
+  oxcart_vec2_t pen;
+  oxcart_markup_t markup;
+  oxcart_metrics_t metrics;
+  char buffer[16];
+
+  now = oxcart_time_tick();
+  elapsed = now - _m.past;
+  _m.past = now;
+  _m.frames++;
+
+  if ((now - _m.osec) >= 1000) {
+    _m.osec = now;
+    _m.fps = _m.frames;
+    _m.frames = 0;
+  }
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -159,7 +172,15 @@ void oxcart_scene_draw(float coeff)
   model = oxcart_mat4_multiply(&translate, &rotate);
   oxcart_cube_draw(_m.cube, &model);
 
-  model = oxcart_mat4_translate(-_m.metrics.bearing, -_m.metrics.ascent, 0.0f);
+  markup = oxcart_markup_defaults();
+  sprintf_s(buffer, OXCART_ARRAY_SIZE(buffer), " dt: %ums", elapsed);
+  pen = oxcart_vec2_set(0.0f, 0.0f);
+  oxcart_text_assign(_m.text, &markup, buffer, 0, &pen);
+  oxcart_text_metrics(_m.text, &markup, buffer, 0, &metrics);
+  sprintf_s(buffer, OXCART_ARRAY_SIZE(buffer), "fps: %u", _m.fps);
+  pen = oxcart_vec2_set(0.0f, metrics.baseline);
+  oxcart_text_append(_m.text, &markup, buffer, 0, &pen);
+  model = oxcart_mat4_translate(-metrics.bearing, -metrics.ascent, 0.0f);
   oxcart_text_draw(_m.text, &model);
 
   oxcart_window_swap();
