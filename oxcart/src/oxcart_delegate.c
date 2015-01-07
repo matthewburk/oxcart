@@ -134,6 +134,13 @@ void oxcart_delegate_mousemove(int x, int y, int alt, int ctrl, int shift)
 /**
  * 
  */
+void oxcart_delegate_mousemoveraw(int x, int y, int alt, int ctrl, int shift)
+{
+}
+
+/**
+ * 
+ */
 void oxcart_delegate_mousebuttondblclick(int button, int x, int y, int alt, int ctrl, int shift)
 {
 }

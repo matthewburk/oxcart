@@ -39,6 +39,7 @@ void oxcart_delegate_keyup(int key, int alt, int ctrl, int shift);
 void oxcart_delegate_mouseenter();
 void oxcart_delegate_mouseexit();
 void oxcart_delegate_mousemove(int x, int y, int alt, int ctrl, int shift);
+void oxcart_delegate_mousemoveraw(int x, int y, int alt, int ctrl, int shift);
 void oxcart_delegate_mousebuttondblclick(int button, int x, int y, int alt, int ctrl, int shift);
 void oxcart_delegate_mousebuttondown(int button, int x, int y, int alt, int ctrl, int shift);
 void oxcart_delegate_mousebuttonup(int button, int x, int y, int alt, int ctrl, int shift);

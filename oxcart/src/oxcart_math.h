@@ -98,6 +98,7 @@ OXCART_INLINE float OXCART_VCALL oxcart_vec2_angle(const oxcart_vec2_t* v1, cons
 
 OXCART_INLINE oxcart_vec3_t OXCART_VCALL oxcart_vec3_zero();
 OXCART_INLINE oxcart_vec3_t OXCART_VCALL oxcart_vec3_set(float x, float y, float z);
+OXCART_INLINE oxcart_vec3_t OXCART_VCALL oxcart_vec3_setv2(const oxcart_vec2_t* v1, float z);
 OXCART_INLINE oxcart_vec3_t OXCART_VCALL oxcart_vec3_add(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2);
 OXCART_INLINE oxcart_vec3_t OXCART_VCALL oxcart_vec3_subtract(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2);
 OXCART_INLINE oxcart_vec3_t OXCART_VCALL oxcart_vec3_multiply(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2);
@@ -117,6 +118,8 @@ OXCART_INLINE float OXCART_VCALL oxcart_vec3_angle(const oxcart_vec3_t* v1, cons
 
 OXCART_INLINE oxcart_vec4_t OXCART_VCALL oxcart_vec4_zero();
 OXCART_INLINE oxcart_vec4_t OXCART_VCALL oxcart_vec4_set(float x, float y, float z, float w);
+OXCART_INLINE oxcart_vec4_t OXCART_VCALL oxcart_vec4_setv2(const oxcart_vec2_t* v1, float z, float w);
+OXCART_INLINE oxcart_vec4_t OXCART_VCALL oxcart_vec4_setv3(const oxcart_vec3_t* v1, float w);
 OXCART_INLINE oxcart_vec4_t OXCART_VCALL oxcart_vec4_add(const oxcart_vec4_t* v1, const oxcart_vec4_t* v2);
 OXCART_INLINE oxcart_vec4_t OXCART_VCALL oxcart_vec4_subtract(const oxcart_vec4_t* v1, const oxcart_vec4_t* v2);
 OXCART_INLINE oxcart_vec4_t OXCART_VCALL oxcart_vec4_multiply(const oxcart_vec4_t* v1, const oxcart_vec4_t* v2);

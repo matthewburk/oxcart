@@ -619,6 +619,7 @@ static void _window_initialize(const char* title, int style, int x, int y, int w
   WNDCLASS wndclass = {0};
   DWORD wndstyle;
   RECT rect;
+  RAWINPUTDEVICE rid;
   PIXELFORMATDESCRIPTOR pfd;
 
   OXCART_ASSERT(title);
@@ -663,6 +664,15 @@ static void _window_initialize(const char* title, int style, int x, int y, int w
                             rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top,
                             0, 0, GetModuleHandle(0), 0))) {
     OXCART_ASSERT(!"CreateWindow() failed");
+  }
+
+  rid.usUsagePage = 0x01;
+  rid.usUsage = 0x02; /* 0x02:mouse, 0x06:keyboard */
+  rid.dwFlags = 0;
+  rid.hwndTarget = hwnd;
+
+  if (!RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE))) {
+    OXCART_ASSERT(!"RegisterRawInputDevices() failed");
   }
 
   if (!(hdc = GetDC(hwnd))) {
@@ -984,6 +994,20 @@ static LRESULT CALLBACK _window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
                             GetKeyState(VK_MENU) & 0x8000,
                             GetKeyState(VK_CONTROL) & 0x8000,
                             GetKeyState(VK_SHIFT) & 0x8000);
+      return(0);
+    }
+
+    case WM_INPUT:
+    {
+      RAWINPUT raw;
+      UINT size = sizeof(RAWINPUT);
+      GetRawInputData((HRAWINPUT)lparam, RID_INPUT, &raw, &size, sizeof(RAWINPUTHEADER));
+
+      oxcart_delegate_mousemoveraw(raw.data.mouse.lLastX, raw.data.mouse.lLastY,
+                                   GetKeyState(VK_MENU) & 0x8000,
+                                   GetKeyState(VK_CONTROL) & 0x8000,
+                                   GetKeyState(VK_SHIFT) & 0x8000);
+
       return(0);
     }
 

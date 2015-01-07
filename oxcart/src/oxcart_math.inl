@@ -281,6 +281,22 @@ OXCART_INLINE oxcart_vec3_t OXCART_VCALL oxcart_vec3_set(float x, float y, float
 /**
  * 
  */
+OXCART_INLINE oxcart_vec3_t OXCART_VCALL oxcart_vec3_setv2(const oxcart_vec2_t* v1, float z)
+{
+  oxcart_vec3_t vec3;
+
+  OXCART_ASSERT(v1);
+
+  vec3.d[0] = v1->d[0];
+  vec3.d[1] = v1->d[1];
+  vec3.d[2] = z;
+
+  return(vec3);
+}
+
+/**
+ * 
+ */
 OXCART_INLINE oxcart_vec3_t OXCART_VCALL oxcart_vec3_add(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2)
 {
   oxcart_vec3_t vec3;
@@ -551,6 +567,40 @@ OXCART_INLINE oxcart_vec4_t OXCART_VCALL oxcart_vec4_set(float x, float y, float
   vec4.d[0] = x;
   vec4.d[1] = y;
   vec4.d[2] = z;
+  vec4.d[3] = w;
+
+  return(vec4);
+}
+
+/**
+ * 
+ */
+OXCART_INLINE oxcart_vec4_t OXCART_VCALL oxcart_vec4_setv2(const oxcart_vec2_t* v1, float z, float w)
+{
+  oxcart_vec4_t vec4;
+
+  OXCART_ASSERT(v1);
+
+  vec4.d[0] = v1->d[0];
+  vec4.d[1] = v1->d[1];
+  vec4.d[2] = z;
+  vec4.d[3] = w;
+
+  return(vec4);
+}
+
+/**
+ * 
+ */
+OXCART_INLINE oxcart_vec4_t OXCART_VCALL oxcart_vec4_setv3(const oxcart_vec3_t* v1, float w)
+{
+  oxcart_vec4_t vec4;
+
+  OXCART_ASSERT(v1);
+
+  vec4.d[0] = v1->d[0];
+  vec4.d[1] = v1->d[1];
+  vec4.d[2] = v1->d[2];
   vec4.d[3] = w;
 
   return(vec4);
