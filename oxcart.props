@@ -11,8 +11,8 @@
     <ToolsDir>$(SolutionDir)$(ProjectName)\tools\</ToolsDir>
     <FreetypeIncludeDir>$(SolutionDir)freetype\include\</FreetypeIncludeDir>
     <LodepngIncludeDir>$(SolutionDir)lodepng\include\</LodepngIncludeDir>
-    <LuaIncludeDir>$(SolutionDir)lua\include\</LuaIncludeDir>
     <PhysfsIncludeDir>$(SolutionDir)physfs\include\</PhysfsIncludeDir>
+    <LuaJITIncludeDir>$(SolutionDir)LuaJIT-2.0.3\src</LuaJITIncludeDir>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
@@ -44,11 +44,11 @@
     <BuildMacro Include="LodepngIncludeDir">
       <Value>$(LodepngIncludeDir)</Value>
     </BuildMacro>
-    <BuildMacro Include="LuaIncludeDir">
-      <Value>$(LuaIncludeDir)</Value>
-    </BuildMacro>
     <BuildMacro Include="PhysfsIncludeDir">
       <Value>$(PhysfsIncludeDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LuaJITIncludeDir">
+      <Value>$(LuaJITIncludeDir)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

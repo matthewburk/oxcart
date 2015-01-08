@@ -48,6 +48,7 @@
     <CustomBuildBeforeTargets>Clean</CustomBuildBeforeTargets>
     <IncludePath>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -63,7 +64,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0601;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(IncludeDir);$(FreetypeIncludeDir);$(LodepngIncludeDir);$(LuaIncludeDir);$(PhysfsIncludeDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludeDir);$(FreetypeIncludeDir);$(LodepngIncludeDir);$(LuaJITIncludeDir);$(PhysfsIncludeDir)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <PrecompiledHeaderFile>
@@ -81,10 +82,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(LuaJITIncludeDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>winmm.lib;opengl32.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua51.lib;winmm.lib;opengl32.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -93,7 +93,9 @@
       <AdditionalIncludeDirectories>$(ResDir)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>$(BldDir)oxcart_ar.bat $(Configuration)</Command>
+      <Command>copy $(LuaJITIncludeDir)\lua51.dll $(BinDir)$(Configuration)\
+$(BldDir)oxcart_ar.bat $(Configuration)
+</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -135,10 +137,9 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(LuaJITIncludeDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>winmm.lib;opengl32.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua51.lib;winmm.lib;opengl32.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -151,7 +152,8 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>$(BldDir)oxcart_ar.bat $(Configuration)</Command>
+      <Command>copy $(LuaJITIncludeDir)\lua51.dll $(BinDir)$(Configuration)\
+$(BldDir)oxcart_ar.bat $(Configuration)</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>del $(BinDir)$(Configuration)\oxcart.zip</Command>
@@ -212,9 +214,6 @@
     </ProjectReference>
     <ProjectReference Include="..\..\lodepng\bld\lodepng.vcxproj">
       <Project>{419459c4-7ccb-43dd-9fae-42f6e73814e1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\lua\bld\lua.vcxproj">
-      <Project>{08078815-96d1-4ee4-88b6-469bea8b99de}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\physfs\bld\physfs.vcxproj">
       <Project>{442db75e-6619-404b-a75b-dccd66d3056e}</Project>

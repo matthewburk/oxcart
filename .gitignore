@@ -52,3 +52,6 @@ Thumbs.db
 *.vsp
 *.dgml
 *.swp
+
+*.vcxproj.user
+LuaJIT-2.0.3/src/lua51.exp
