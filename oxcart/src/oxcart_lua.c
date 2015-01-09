@@ -67,15 +67,11 @@ lua_State* oxcart_lua_newstate()
     OXCART_ASSERT(!"lua_istable() failed");
   }
 
-  /* right shift elements in package.loaders to free second slot */
-  for (i = lua_objlen(L, -1); i >= 2; i--) {
-    lua_rawgeti(L, -1, i);
-    lua_rawseti(L, -2, i + 1);
-  }
+  i = lua_objlen(L, -1);
 
-  /* insert _lua_searcher into second slot of package.loaders */
+  /* insert _lua_searcher at end of package.loaders */
   lua_pushcfunction(L, _lua_searcher);
-  lua_rawseti(L, -2, 2);
+  lua_rawseti(L, -2, i + 1);
   lua_pop(L, 2);
 
   return(L);
@@ -324,4 +320,45 @@ static const char* _lua_freader(lua_State* L, void* data, size_t* size)
 
   *size = (size_t)count;
   return(fdata->buffer);
+}
+
+#include "oxcart_math.h"
+
+OXCART_API oxcart_mat4_t mat4_lookat(const oxcart_vec3_t* eye, const oxcart_vec3_t* target, const oxcart_vec3_t* up)
+{
+	return oxcart_mat4_lookat(eye, target, up);
+}
+
+OXCART_API oxcart_mat4_t mat4_perspective(float fovy, float aspect, float n, float f)
+{
+	return oxcart_mat4_perspective(fovy, aspect, n, f);
+}
+
+OXCART_API oxcart_mat4_t mat4_rotate(float x, float y, float z, float angle)
+{
+	return oxcart_mat4_rotate(x, y, z, angle);
+}
+
+OXCART_API oxcart_mat4_t mat4_translate(float x, float y, float z)
+{
+	return oxcart_mat4_translate(x, y, z);
+}
+
+OXCART_API oxcart_mat4_t mat4_multiply(const oxcart_mat4_t* m1, const oxcart_mat4_t* m2)
+{
+	return oxcart_mat4_multiply(m1, m2);
+}
+
+OXCART_API oxcart_mat4_t mat4_orthographic(float w, float h)
+{
+	return oxcart_mat4_orthographic(w, h);
+}
+
+OXCART_API oxcart_mat4_t mat4_identity()
+{
+	return oxcart_mat4_identity();
+}
+
+OXCART_API void vec3_cross(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2, oxcart_vec3_t* vr) {
+	*vr = oxcart_vec3_cross(v1, v2);
 }

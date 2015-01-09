@@ -33,6 +33,9 @@ extern "C" {
 #include <lualib.h>
 #include <lauxlib.h>
 
+extern lua_State* L;
+extern int oxcartref;
+
 #define OXCART_LUA_DOFILE(L, fn) (oxcart_lua_loadfile(L, fn) || oxcart_lua_pcall(L, 0, LUA_MULTRET))
 #define OXCART_LUA_DOSTRING(L, s) (luaL_loadstring(L, s) || oxcart_lua_pcall(L, 0, LUA_MULTRET))
 

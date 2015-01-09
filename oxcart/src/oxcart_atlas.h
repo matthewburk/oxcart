@@ -30,13 +30,13 @@ extern "C" {
 
 typedef struct oxcart_atlas_t oxcart_atlas_t;
 
-oxcart_atlas_t* oxcart_atlas_create(int w, int h, int depth);
-void oxcart_atlas_destroy(oxcart_atlas_t* atlas);
-void oxcart_atlas_properties(oxcart_atlas_t* atlas, int* w, int* h, int* depth);
-const unsigned char* oxcart_atlas_data(oxcart_atlas_t* atlas);
-int oxcart_atlas_reserve(oxcart_atlas_t* atlas, int w, int h, int* x, int* y);
-void oxcart_atlas_fill(oxcart_atlas_t* atlas, int x, int y, int w, int h, int stride, const unsigned char* data);
-void oxcart_atlas_clear(oxcart_atlas_t* atlas);
+OXCART_API oxcart_atlas_t* oxcart_atlas_create(int w, int h, int depth);
+OXCART_API void oxcart_atlas_destroy(oxcart_atlas_t* atlas);
+OXCART_API void oxcart_atlas_properties(oxcart_atlas_t* atlas, int* w, int* h, int* depth);
+OXCART_API const unsigned char* oxcart_atlas_data(oxcart_atlas_t* atlas);
+OXCART_API int oxcart_atlas_reserve(oxcart_atlas_t* atlas, int w, int h, int* x, int* y);
+OXCART_API void oxcart_atlas_fill(oxcart_atlas_t* atlas, int x, int y, int w, int h, int stride, const unsigned char* data);
+OXCART_API void oxcart_atlas_clear(oxcart_atlas_t* atlas);
 
 #ifdef __cplusplus
 }

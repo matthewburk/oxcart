@@ -25,34 +25,31 @@
 #include "oxcart_delegate.h"
 #include "oxcart_scene.h"
 #include "oxcart_state.h"
-
-#define OXCART_UPDATE_MAXCNT 10
-#define OXCART_UPDATE_TIMESTEP 10
-
-typedef struct oxcart_module_t oxcart_module_t;
-
-struct oxcart_module_t
-{
-  size_t accum;
-};
-
-static oxcart_module_t _m = {0};
+#include "oxcart_lua.h"
 
 /**
  * 
  */
 void oxcart_delegate_update(size_t elapsed)
 {
-  int count;
+  if (L) {
+	  size_t total = oxcart_time_tick();
+	  lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
 
-  _m.accum += elapsed;
+	  lua_getfield(L, -1, "update");
+	  if (lua_isfunction(L, -1)) {
+		  lua_pushnumber(L, total);
+		  lua_pushnumber(L, elapsed);
+		  oxcart_lua_pcall(L, 2, 0);
+	  }
+	  else {
+		  lua_pop(L, 1); //pop oxcart.update
+	  }
 
-  for (count = 0; ((_m.accum >= OXCART_UPDATE_TIMESTEP) && (count < OXCART_UPDATE_MAXCNT)); count++) {
-    oxcart_state_update(OXCART_UPDATE_TIMESTEP);
-    _m.accum -= OXCART_UPDATE_TIMESTEP;
+	  lua_pop(L, 1); //pop oxcart table
   }
 
-  oxcart_scene_draw((float)_m.accum / OXCART_UPDATE_TIMESTEP);
+  oxcart_window_swap();
 }
 
 /**
@@ -63,15 +60,24 @@ void oxcart_delegate_windowevent(int event)
   switch (event)
   {
     case OXCART_WINDOW_EVENT_CREATED:
-      oxcart_state_initialize();
-      oxcart_scene_initialize();
       oxcart_window_setvisible(1);
       break;
+  }
 
-    case OXCART_WINDOW_EVENT_DESTROYED:
-      oxcart_scene_terminate();
-      oxcart_state_terminate();
-      break;
+  if (L) {
+	  int nargs = 0;
+	  lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+	  lua_getfield(L, -1, "onwindowevent");
+
+	  if (lua_isfunction(L, -1)) {
+		  lua_pushinteger(L, event); nargs++;
+		  oxcart_lua_pcall(L, nargs, 0);
+
+		  lua_pop(L, 1);
+	  }
+	  else {
+		  lua_pop(L, 2);
+	  }
   }
 }
 
@@ -80,6 +86,21 @@ void oxcart_delegate_windowevent(int event)
  */
 int oxcart_delegate_command(int command)
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "oncommand");
+
+		if (lua_isfunction(L, -1)) {
+			lua_pushinteger(L, command); nargs++;
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+	}
   return(0);
 }
 
@@ -88,6 +109,20 @@ int oxcart_delegate_command(int command)
  */
 void oxcart_delegate_char(char c)
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onchar");
+
+		if (lua_isfunction(L, -1)) {
+			lua_pushfstring(L, "%c", c); nargs++;
+			oxcart_lua_pcall(L, nargs, 0);
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+	}
 }
 
 /**
@@ -95,6 +130,25 @@ void oxcart_delegate_char(char c)
  */
 void oxcart_delegate_keydown(int key, int repeat, int alt, int ctrl, int shift)
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onkeydown");
+
+		if (lua_isfunction(L, -1)) {
+			lua_pushinteger(L, key); nargs++;
+			lua_pushinteger(L, repeat); nargs++;
+			lua_pushboolean(L, alt); nargs++;
+			lua_pushboolean(L, ctrl); nargs++;
+			lua_pushboolean(L, shift); nargs++;
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+	}
 }
 
 /**
@@ -102,12 +156,24 @@ void oxcart_delegate_keydown(int key, int repeat, int alt, int ctrl, int shift)
  */
 void oxcart_delegate_keyup(int key, int alt, int ctrl, int shift)
 {
-  switch (key)
-  {
-    case OXCART_KEYBOARD_KEY_ESCAPE:
-      oxcart_window_close();
-      break;
-  }
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onkeyup");
+
+		if (lua_isfunction(L, -1)) {
+			lua_pushinteger(L, key); nargs++;
+			lua_pushboolean(L, alt); nargs++;
+			lua_pushboolean(L, ctrl); nargs++;
+			lua_pushboolean(L, shift); nargs++;
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+	}
 }
 
 /**
@@ -115,6 +181,20 @@ void oxcart_delegate_keyup(int key, int alt, int ctrl, int shift)
  */
 void oxcart_delegate_mouseenter()
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onmouseenter");
+
+		if (lua_isfunction(L, -1)) {
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+	}
 }
 
 /**
@@ -122,6 +202,20 @@ void oxcart_delegate_mouseenter()
  */
 void oxcart_delegate_mouseexit()
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onmouseexit");
+
+		if (lua_isfunction(L, -1)) {
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+	}
 }
 
 /**
@@ -129,6 +223,26 @@ void oxcart_delegate_mouseexit()
  */
 void oxcart_delegate_mousemove(int x, int y, int alt, int ctrl, int shift)
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onmousemove");
+
+		if (lua_isfunction(L, -1)) {
+			lua_pushinteger(L, x); nargs++;
+			lua_pushinteger(L, y); nargs++;
+			lua_pushboolean(L, alt); nargs++;
+			lua_pushboolean(L, ctrl); nargs++;
+			lua_pushboolean(L, shift); nargs++;
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+
+	}
 }
 
 /**
@@ -136,6 +250,26 @@ void oxcart_delegate_mousemove(int x, int y, int alt, int ctrl, int shift)
  */
 void oxcart_delegate_mousemoveraw(int x, int y, int alt, int ctrl, int shift)
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onmousemoveraw");
+
+		if (lua_isfunction(L, -1)) {
+			lua_pushinteger(L, x); nargs++;
+			lua_pushinteger(L, y); nargs++;
+			lua_pushboolean(L, alt); nargs++;
+			lua_pushboolean(L, ctrl); nargs++;
+			lua_pushboolean(L, shift); nargs++;
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+
+	}
 }
 
 /**
@@ -143,6 +277,27 @@ void oxcart_delegate_mousemoveraw(int x, int y, int alt, int ctrl, int shift)
  */
 void oxcart_delegate_mousebuttondblclick(int button, int x, int y, int alt, int ctrl, int shift)
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onmousedoubleclick");
+
+		if (lua_isfunction(L, -1)) {
+			lua_pushinteger(L, button); nargs++;
+			lua_pushinteger(L, x); nargs++;
+			lua_pushinteger(L, y); nargs++;
+			lua_pushboolean(L, alt); nargs++;
+			lua_pushboolean(L, ctrl); nargs++;
+			lua_pushboolean(L, shift); nargs++;
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+
+	}
 }
 
 /**
@@ -150,6 +305,27 @@ void oxcart_delegate_mousebuttondblclick(int button, int x, int y, int alt, int 
  */
 void oxcart_delegate_mousebuttondown(int button, int x, int y, int alt, int ctrl, int shift)
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onmousedown");
+
+		if (lua_isfunction(L, -1)) {
+			lua_pushinteger(L, button); nargs++;
+			lua_pushinteger(L, x); nargs++;
+			lua_pushinteger(L, y); nargs++;
+			lua_pushboolean(L, alt); nargs++;
+			lua_pushboolean(L, ctrl); nargs++;
+			lua_pushboolean(L, shift); nargs++;
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+
+	}
 }
 
 /**
@@ -157,6 +333,27 @@ void oxcart_delegate_mousebuttondown(int button, int x, int y, int alt, int ctrl
  */
 void oxcart_delegate_mousebuttonup(int button, int x, int y, int alt, int ctrl, int shift)
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onmouseup");
+
+		if (lua_isfunction(L, -1)) {
+			lua_pushinteger(L, button); nargs++;
+			lua_pushinteger(L, x); nargs++;
+			lua_pushinteger(L, y); nargs++;
+			lua_pushboolean(L, alt); nargs++;
+			lua_pushboolean(L, ctrl); nargs++;
+			lua_pushboolean(L, shift); nargs++;
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+
+	}
 }
 
 /**
@@ -164,6 +361,28 @@ void oxcart_delegate_mousebuttonup(int button, int x, int y, int alt, int ctrl, 
  */
 void oxcart_delegate_mousewheelscroll(int delta, int step, int x, int y, int alt, int ctrl, int shift)
 {
+	if (L) {
+		int nargs = 0;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, oxcartref);
+		lua_getfield(L, -1, "onmousewheel");
+
+		if (lua_isfunction(L, -1)) {
+			lua_pushinteger(L, delta); nargs++;
+			lua_pushinteger(L, step); nargs++;
+			lua_pushinteger(L, x); nargs++;
+			lua_pushinteger(L, y); nargs++;
+			lua_pushboolean(L, alt); nargs++;
+			lua_pushboolean(L, ctrl); nargs++;
+			lua_pushboolean(L, shift); nargs++;
+			oxcart_lua_pcall(L, nargs, 0);
+
+			lua_pop(L, 1);
+		}
+		else {
+			lua_pop(L, 2);
+		}
+
+	}
 }
 
 /**

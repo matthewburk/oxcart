@@ -183,24 +183,24 @@ extern "C" {
 #define OXCART_MOUSE_BUTTON_MIDDLE             0x02
 #define OXCART_MOUSE_BUTTON_RIGHT              0x04
 
-void oxcart_window_close();
-void oxcart_window_swap();
-int oxcart_window_visible();
-void oxcart_window_setvisible(int visible);
-int oxcart_window_style();
-void oxcart_window_setstyle(int style, int x, int y, int w, int h);
-void oxcart_window_rect(int* x, int* y, int* w, int* h);
-void oxcart_window_setrect(int x, int y, int w, int h);
-int oxcart_window_vsync();
-void oxcart_window_setvsync(int vsync);
+OXCART_API void oxcart_window_close();
+OXCART_API void oxcart_window_swap();
+OXCART_API int oxcart_window_visible();
+OXCART_API void oxcart_window_setvisible(int visible);
+OXCART_API int oxcart_window_style();
+OXCART_API void oxcart_window_setstyle(int style, int x, int y, int w, int h);
+OXCART_API void oxcart_window_rect(int* x, int* y, int* w, int* h);
+OXCART_API void oxcart_window_setrect(int x, int y, int w, int h);
+OXCART_API int oxcart_window_vsync();
+OXCART_API void oxcart_window_setvsync(int vsync);
 
-int oxcart_monitor_count();
-void oxcart_monitor_rect(int index, int* x, int* y, int* w, int* h);
-void oxcart_monitor_dpi(int* x, int* y);
+OXCART_API int oxcart_monitor_count();
+OXCART_API void oxcart_monitor_rect(int index, int* x, int* y, int* w, int* h);
+OXCART_API void oxcart_monitor_dpi(int* x, int* y);
 
-size_t oxcart_time_tick();
-void oxcart_time_local(int* h, int* m, int* s, int* ms);
-void oxcart_time_system(int* h, int* m, int* s, int* ms);
+OXCART_API size_t oxcart_time_tick();
+OXCART_API void oxcart_time_local(int* h, int* m, int* s, int* ms);
+OXCART_API void oxcart_time_system(int* h, int* m, int* s, int* ms);
 
 #ifdef __cplusplus
 }

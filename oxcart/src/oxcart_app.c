@@ -103,6 +103,41 @@ static int _keyboard_translate(WPARAM key);
 
 static oxcart_module_t _m = {0};
 
+lua_State* L = 0;
+int oxcartref = 0;
+
+//1 - dir
+//2 - args
+static int open_oxcart_L(lua_State* L) {
+	lua_settop(L, 2);
+
+	//oxcart
+	lua_newtable(L);
+	lua_setglobal(L, "oxcart");
+
+	lua_getglobal(L, "oxcart");
+	oxcartref = luaL_ref(L, LUA_REGISTRYINDEX);
+
+	//set oxcart.path
+	lua_getglobal(L, "oxcart");
+	lua_pushvalue(L, 1);
+	lua_setfield(L, -2, "path");
+
+	//oxcart.args
+	lua_pushvalue(L, 2);
+	lua_setfield(L, -2, "args");
+
+	lua_settop(L, 0);
+
+	lua_getglobal(L, "require");
+	lua_pushliteral(L, "oxcart");
+	lua_call(L, 1, 1);
+
+	lua_call(L, 0, 0); //call function returned from require 'oxcart'
+
+	return 0;
+}
+
 /**
  * 
  */
@@ -140,6 +175,30 @@ int main(int argc, char** argv)
   }
   else {
     _window_initialize("oxcart", OXCART_WINDOW_STYLE_BORDER, (w - _m.config.w) / 2, (h - _m.config.h) / 2, _m.config.w, _m.config.h);
+  }
+
+  L = oxcart_lua_newstate();
+
+  {
+	  int i;
+	  static char oxcartname[MAX_PATH] = { 0 };
+	  static char oxcartdir[MAX_PATH] = { 0 };
+
+	  GetModuleFileName(0, oxcartname, sizeof(oxcartname));
+	  strncpy(oxcartdir, oxcartname, strrchr(oxcartname, '\\') - oxcartname);
+
+	  lua_pushcfunction(L, open_oxcart_L);
+	  lua_pushstring(L, oxcartdir); //1 	  
+	  lua_newtable(L);//2 args
+
+	  for (i = 2; i < argc; i++) {
+		  lua_pushstring(L, argv[i]);
+		  lua_rawseti(L, -2, i - 1);
+	  }
+
+	  if (!oxcart_lua_pcall(L, 2, 0)) {
+		  //ok
+	  }
   }
 
   past = oxcart_time_tick();
@@ -288,6 +347,30 @@ void oxcart_window_setrect(int x, int y, int w, int h)
   SetWindowPos(_m.window.hwnd, HWND_TOP,
                rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top,
                SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOCOPYBITS);
+}
+
+/**
+* TODO remove once working as before
+*/
+typedef struct rect {
+	int x;
+	int y;
+	int w;
+	int h;
+} rect_t;
+/**
+* TODO remove once working as before
+*/
+OXCART_API rect_t oxcart_get_window_rect()
+{
+	rect_t r;
+
+	r.x = _m.window.x;
+	r.y = _m.window.y;
+	r.w = _m.window.w;
+	r.h = _m.window.h;
+
+	return r;
 }
 
 /**
