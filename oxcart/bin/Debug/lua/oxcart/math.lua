@@ -49,6 +49,12 @@ struct mat4_t {
 };
 
 void vec3_cross(const vec3_t* v1, const vec3_t* v2, vec3_t* vr);
+void vec3_normalize(vec3_t* v);
+void vec4_normalize(vec4_t* v);
+
+void mat4_to_mat3_normal(const mat4_t* m1, mat3_t* r);
+
+mat3_t mat3_identity();
 
 //TODO return struct by value prevents jit, change api
 mat4_t mat4_lookat(const vec3_t* eye, const vec3_t* target, const vec3_t* up);

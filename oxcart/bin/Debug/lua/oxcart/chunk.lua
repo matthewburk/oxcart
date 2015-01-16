@@ -1,7 +1,8 @@
 local ffi = require 'ffi'
 local gl = require 'opengl'
 local bit = require 'bit'
-local geometry = require 'oxcart.geometry'
+require 'oxcart.geometry'
+require 'oxcart.program'
 local C = ffi.C
 local M = {}
 
@@ -156,6 +157,39 @@ local normals = ffi.new('vec3_t[24]', {
    {0, -1,  0,},
 })
 
+local colors = ffi.new('vec4_t[24]', {
+   --front
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    --left
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    --back
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    --right
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    --top
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    --bottom
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+    {0, 1, 0, 1},
+})
+
 --i is iteration, starts at 0
 local function addcube(i, x, y, z)
   local r = 1--half vunit 
@@ -215,7 +249,7 @@ local function addcube(i, x, y, z)
     i+0+20, i+2+20, i+3+20,
   })
 
-  return positions, normals, elements
+  return positions, normals, colors, elements
 end
 
 local perlin = require('oxcart.math').perlin
@@ -232,6 +266,7 @@ function M.new(tx, ty, tz)
   local elements = vector['GLuint'](36)
   local positions = vector['point3_t'](24)
   local normals = vector['vec3_t'](24)
+  local colors = vector['vec4_t'](24)
 
   local i = 0
   for x = tx-vunit*15, tx+vunit*15, vunit do
@@ -240,10 +275,11 @@ function M.new(tx, ty, tz)
 
 
       for y = math.max(h, ty-vunit*15), h, vunit do
-        local voxelpositions, voxelnormals, voxelelements = addcube(i, x, y, z)
+        local voxelpositions, voxelnormals, voxelcolors, voxelelements = addcube(i, x, y, z)
 
         positions:pushbackv(voxelpositions, sizeof(voxelpositions)/sizeof('point3_t'))
         normals:pushbackv(voxelnormals, sizeof(voxelnormals)/sizeof('vec3_t'))
+        colors:pushbackv(voxelcolors, sizeof(voxelcolors)/sizeof('vec4_t'))
         elements:pushbackv(voxelelements, sizeof(voxelelements)/sizeof('GLuint'))
 
         i = i+1
@@ -261,7 +297,7 @@ function M.new(tx, ty, tz)
   gl.glVertexAttribPointer(oxcart.attrib.position, 3, GL_FLOAT, GL_FALSE, 0, nil)
   gl.glEnableVertexAttribArray(oxcart.attrib.position)
 
-  do
+  do --normals
     local arraybuffer = gl.glGenBuffer()
     gl.glBindBuffer(GL_ARRAY_BUFFER, arraybuffer)
     gl.glBufferData(GL_ARRAY_BUFFER, normals:sizeof(), normals:front(), GL_STATIC_DRAW)
@@ -269,15 +305,89 @@ function M.new(tx, ty, tz)
     gl.glEnableVertexAttribArray(oxcart.attrib.normal)
   end
 
+  do --colors
+    local arraybuffer = gl.glGenBuffer()
+    gl.glBindBuffer(GL_ARRAY_BUFFER, arraybuffer)
+    gl.glBufferData(GL_ARRAY_BUFFER, colors:sizeof(), colors:front(), GL_STATIC_DRAW)
+    gl.glVertexAttribPointer(oxcart.attrib.color, 4, GL_FLOAT, GL_FALSE, 0, nil)
+    gl.glEnableVertexAttribArray(oxcart.attrib.color)
+  end
+
   local ibo = gl.glGenBuffer()
   gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo)
   gl.glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements:sizeof(), elements:front(), GL_STATIC_DRAW);
-  
+ 
+  local program = oxcart.program.new {
+    oxcart.program.newvertexshader[[
+    #version 420 core
+    layout(std140) uniform;
+
+    uniform matrices {
+      mat4 m_projection;
+      mat4 m_view;
+      mat4 m_model;
+      mat3 m_normaltransform;
+    };
+
+    in vec4 position;
+    in vec3 normal;
+    in vec4 color;
+
+    out vec3 vs_position;
+    out vec3 vs_normal;
+    out vec4 vs_color;
+
+    void main()
+    {
+      vs_color = color;
+      vs_normal = normalize(mat3(m_model) * normal);
+      vs_position = vec3(m_model * position);
+
+      gl_Position = m_projection * m_view * m_model * position;
+    }
+    ]],
+
+    oxcart.program.newfragmentshader[[
+    #version 420 core
+    layout(std140) uniform;
+
+    uniform matrices {
+      mat4 m_projection;
+      mat4 m_view;
+      mat4 m_model;
+      mat3 m_normaltransform;
+    };
+
+    uniform light {
+      vec4 surfacetolight; 
+      vec4 intensity; 
+      float l_ambientcoefficient;
+    };
+
+    in vec4 vs_color;
+    in vec3 vs_normal;
+
+    out vec4 fs_color;
+
+    void main()
+    {
+      vec3 ambient = l_ambientcoefficient * vs_color.rgb * intensity.rgb;
+
+      float diffusecoefficent = max(0.0, dot(vs_normal, surfacetolight.xyz));
+      vec3 diffuse = diffusecoefficent * vs_color.rgb * intensity.rgb;
+
+      fs_color = vec4(ambient+diffuse, vs_color.a);
+    }
+    ]],
+  }
+
   return {
+    program = program,
     vao = vao,
-    ibo = ibo,
     nelements = nelements,
   }
 end
+
+oxcart.chunk = M
 
 return M

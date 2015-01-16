@@ -18,6 +18,7 @@ do
 
   for i, name in ipairs {
     'matrices',
+    'light',
   } do
     local t = {}
     local glbuffer = gl.glGenBuffer() 
@@ -109,7 +110,7 @@ do
 
     if alinkstatus[0] == 0 then
       local log = ffi.new('GLchar[1024]')
-      gl.glGetProgramInfoLog(shader, 1024, nil, log)
+      gl.glGetProgramInfoLog(program, 1024, nil, log)
       error(ffi.string(log))
     end
 

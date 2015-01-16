@@ -359,6 +359,28 @@ OXCART_API oxcart_mat4_t mat4_identity()
 	return oxcart_mat4_identity();
 }
 
+OXCART_API oxcart_mat3_t mat3_identity()
+{
+	return oxcart_mat3_identity();
+}
+
 OXCART_API void vec3_cross(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2, oxcart_vec3_t* vr) {
 	*vr = oxcart_vec3_cross(v1, v2);
+}
+
+OXCART_API void vec3_normalize(oxcart_vec3_t* v) {
+	*v = oxcart_vec3_normalize(v);
+}
+
+OXCART_API void vec4_normalize(oxcart_vec4_t* v) {
+	*v = oxcart_vec4_normalize(v);
+}
+
+OXCART_API void mat4_to_mat3_normal(const oxcart_mat4_t* m1, oxcart_mat3_t* r) {
+	r->d[0] = m1->d[0];	r->d[1] = m1->d[1];	r->d[2] = m1->d[2];
+	r->d[3] = m1->d[4];	r->d[4] = m1->d[5];	r->d[5] = m1->d[6];
+	r->d[6] = m1->d[8];	r->d[7] = m1->d[9];	r->d[8] = m1->d[10];
+
+	oxcart_mat3_t inverse = oxcart_mat3_affineinverse(r);
+	*r = oxcart_mat3_transpose(&inverse);
 }

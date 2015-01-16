@@ -1,7 +1,7 @@
 local cel = require 'cel'
 local M = cel.getface('cel')
 
-M.font = cel.loadfont('default', 12)
+M.font = cel.loadfont('default', 8)
 M.draw = nil--default face does not draw
 
 do --@color

@@ -15,8 +15,6 @@ typedef struct rect {
 rect_t oxcart_get_window_rect();
 
 void Sleep(int ms);
-
-SHORT GetKeyState(int nVirtKey);
 ]]
 
 return ffi.C

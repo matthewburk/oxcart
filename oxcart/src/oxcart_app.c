@@ -1357,3 +1357,4 @@ static int _keyboard_translate(WPARAM key)
 
   return(OXCART_KEYBOARD_KEY_NULL);
 }
+
