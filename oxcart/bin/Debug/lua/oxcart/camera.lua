@@ -30,6 +30,7 @@ function mt:lookat(polar, azimuth)
   Z.z = -r2*-math.cos(azimuth) 
 
   C.vec3_cross(up, Z, self.axes.x)
+  C.vec3_cross(self.axes.z, self.axes.x, self.axes.y)
 
   local p = self.position
 
@@ -84,6 +85,23 @@ function mt:moveright(scalar)
 
   return self
 end
+
+function mt:moveup(scalar)
+  local p = self.position
+  local Y = self.axes.y
+  local Z = self.axes.z
+  p.x = p.x + Y.x*scalar
+  p.y = p.y + Y.y*scalar
+  p.z = p.z + Y.z*scalar
+
+  target.x = p.x - Z.x
+  target.y = p.y - Z.y
+  target.z = p.z - Z.z
+  self.transform = C.mat4_lookat(p, target, up)
+
+  return self
+end
+
 
 local axes_t = ffi.typeof[[ struct { vec3_t x; vec3_t y; vec3_t z; } ]]
 
