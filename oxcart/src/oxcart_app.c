@@ -1055,7 +1055,9 @@ static LRESULT CALLBACK _window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
     case WM_CHAR:
     {
-      oxcart_delegate_char((char)wparam);
+		if ((32 <= (wparam & 0xFF))) {
+			oxcart_delegate_char((char)wparam);
+		}      
       return(0);
     }
 

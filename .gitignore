@@ -56,3 +56,4 @@ Thumbs.db
 *.vcxproj.user
 LuaJIT-2.0.3/src/lua51.exp
 oxcart/bin/Debug/oxcart.exp
+oxcart/bin/Debug/oxcart.exp
