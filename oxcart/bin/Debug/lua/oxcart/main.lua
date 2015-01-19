@@ -89,7 +89,7 @@ end
 
 local chunks = {}
 local buffers = {}
-local terrainsize = 5
+local terrainsize =7 
 
 for x = -terrainsize, terrainsize do
   for z = -terrainsize, terrainsize do

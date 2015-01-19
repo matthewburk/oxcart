@@ -5,7 +5,8 @@ require 'oxcart.geometry'
 require 'oxcart.program'
 local C = ffi.C
 
-local perlin = require('oxcart.math').perlin
+local math = require('oxcart.math')
+local perlin = math.perlin
 local vector = require 'oxcart.vector'
 
 local M = {}
@@ -74,18 +75,7 @@ M.program = oxcart.program.new {
   ]],
 }
 
-ffi.cdef[[
-typedef struct voxelsampler {
-  int8_t top;
-  int8_t bottom;
-  int8_t left;
-  int8_t right;
-  int8_t front;
-  int8_t back;
-  int8_t self;
-  int8_t dunno;
-} voxelsampler_t;
-]]
+
 
 local chunktypes = {}
 
@@ -127,7 +117,19 @@ function M.new(size)
   return (chunktypes[size] or makechunktype(size)).new()
 end
 
-do
+ffi.cdef[[
+typedef struct voxelsampler {
+  int8_t top;
+  int8_t bottom;
+  int8_t left;
+  int8_t right;
+  int8_t front;
+  int8_t back;
+  int8_t self;
+  int8_t dunno;
+} voxelsampler_t;
+]] do
+
   local mt = {}
   mt.__index = mt
 
@@ -139,11 +141,95 @@ do
     self.bottom = grid[icol][iblock-1]
     self.left = gridl[icol][iblock]
     self.right = gridr[icol][iblock]
-    self.back = grid[icol-1][iblock]
-    self.front = grid[icol+1][iblock]
+    self.front = grid[icol-1][iblock]
+    self.back = grid[icol+1][iblock]
   end
 
   ffi.metatype('voxelsampler_t', mt)
+end
+
+ffi.cdef[[
+typedef struct sidesampler {
+  int8_t block[8];
+}sidesampler_t;
+]] do
+
+  local mt = {}
+  mt.__index = mt
+
+  function mt:samplechunktop(chunk, igrid, icol, iblock)
+    iblock = iblock+1
+    self.block[0] = chunk[igrid+1][icol-1][iblock]
+    self.block[1] = chunk[igrid+1][icol  ][iblock]
+    self.block[2] = chunk[igrid+1][icol+1][iblock]
+    self.block[3] = chunk[igrid  ][icol+1][iblock]
+    self.block[4] = chunk[igrid-1][icol+1][iblock]
+    self.block[5] = chunk[igrid-1][icol  ][iblock]
+    self.block[6] = chunk[igrid-1][icol-1][iblock]
+    self.block[7] = chunk[igrid  ][icol-1][iblock]
+  end
+
+  function mt:samplechunkbottom(chunk, igrid, icol, iblock)
+    iblock = iblock-1
+    self.block[0] = chunk[igrid+1][icol+1][iblock]
+    self.block[1] = chunk[igrid+1][icol  ][iblock]
+    self.block[2] = chunk[igrid+1][icol-1][iblock]
+    self.block[3] = chunk[igrid  ][icol-1][iblock]
+    self.block[4] = chunk[igrid-1][icol-1][iblock]
+    self.block[5] = chunk[igrid-1][icol  ][iblock]
+    self.block[6] = chunk[igrid-1][icol+1][iblock]
+    self.block[7] = chunk[igrid  ][icol+1][iblock]
+  end
+
+  function mt:samplechunkleft(chunk, igrid, icol, iblock)
+    igrid = igrid-1
+    self.block[0] = chunk[igrid][icol-1][iblock-1]
+    self.block[1] = chunk[igrid][icol-1][iblock  ]
+    self.block[2] = chunk[igrid][icol-1][iblock+1]
+    self.block[3] = chunk[igrid][icol  ][iblock+1]
+    self.block[4] = chunk[igrid][icol+1][iblock+1]
+    self.block[5] = chunk[igrid][icol+1][iblock  ]
+    self.block[6] = chunk[igrid][icol+1][iblock-1]
+    self.block[7] = chunk[igrid][icol  ][iblock-1]
+  end
+
+  function mt:samplechunkright(chunk, igrid, icol, iblock)
+    igrid = igrid+1
+    self.block[0] = chunk[igrid][icol+1][iblock-1]
+    self.block[1] = chunk[igrid][icol+1][iblock  ]
+    self.block[2] = chunk[igrid][icol+1][iblock+1]
+    self.block[3] = chunk[igrid][icol  ][iblock+1]
+    self.block[4] = chunk[igrid][icol-1][iblock+1]
+    self.block[5] = chunk[igrid][icol-1][iblock  ]
+    self.block[6] = chunk[igrid][icol-1][iblock-1]
+    self.block[7] = chunk[igrid][icol  ][iblock-1]
+  end
+
+  function mt:samplechunkfront(chunk, igrid, icol, iblock)
+    icol = icol-1
+    self.block[0] = chunk[igrid+1][icol][iblock-1]
+    self.block[1] = chunk[igrid+1][icol][iblock  ]
+    self.block[2] = chunk[igrid+1][icol][iblock+1]
+    self.block[3] = chunk[igrid  ][icol][iblock+1]
+    self.block[4] = chunk[igrid-1][icol][iblock+1]
+    self.block[5] = chunk[igrid-1][icol][iblock  ]
+    self.block[6] = chunk[igrid-1][icol][iblock-1]
+    self.block[7] = chunk[igrid  ][icol][iblock-1]
+  end
+
+  function mt:samplechunkback(chunk, igrid, icol, iblock)
+    icol = icol+1
+    self.block[0] = chunk[igrid-1][icol][iblock-1]
+    self.block[1] = chunk[igrid-1][icol][iblock  ]
+    self.block[2] = chunk[igrid-1][icol][iblock+1]
+    self.block[3] = chunk[igrid  ][icol][iblock+1]
+    self.block[4] = chunk[igrid+1][icol][iblock+1]
+    self.block[5] = chunk[igrid+1][icol][iblock  ]
+    self.block[6] = chunk[igrid+1][icol][iblock-1]
+    self.block[7] = chunk[igrid  ][icol][iblock-1]
+  end
+
+  ffi.metatype('sidesampler_t', mt)
 end
 
 
@@ -180,12 +266,8 @@ do
   local r = .5--half vunit 
   local p = ffi.new('point3_t[4]')
   local indices = ffi.new('GLuint[6]')
-  local colors = ffi.new('color4f_t[4]', {
-    {0, 1, 0, 1},
-    {0, 1, 0, 1},
-    {0, 1, 0, 1},
-    {0, 1, 0, 1},
-  })
+  local blockcolor = ffi.new('color4f_t')
+  local colors = ffi.new('color4f_t[4]', { {0, 1, 0, 1}, {0, 1, 0, 1}, {0, 1, 0, 1}, {0, 1, 0, 1}, })
 
   local function updatearrays(i, positions, normals, colors)
     indices[0]=i+0; indices[1]=i+1; indices[2]=i+2
@@ -193,125 +275,152 @@ do
     indicesarray:pushbackv(indices, 6)
     positionsarray:pushbackv(positions, 4)
     normalsarray:pushbackv(normals, 4)
-
-    --[[
-    local c =  math.random()
-    colors[0].y =c
-    colors[1].y =c
-    colors[2].y =c
-    colors[3].y =c
-    --]]
     colorsarray:pushbackv(colors, 4)
   end
 
+  local function calcvertex0ao(sidesampler)
+    local a, b, c = sidesampler.block[0], sidesampler.block[1], sidesampler.block[7]
+    if b == 1 and c ==1 then
+      return .25 -- 1-(3*.25)
+    else
+      return 1-((a+b+c)*.25)
+    end
+  end
+
+  local function calcvertex1ao(sidesampler)
+    local a, b, c = sidesampler.block[2], sidesampler.block[3], sidesampler.block[1]
+    if b == 1 and c ==1 then
+      return .25 -- 1-(3*.25)
+    else
+      return 1-((a+b+c)*.25)
+    end
+  end
+
+  local function calcvertex2ao(sidesampler)
+    local a, b, c = sidesampler.block[4], sidesampler.block[5], sidesampler.block[3]
+    if b == 1 and c ==1 then
+      return .25 -- 1-(3*.25)
+    else
+      return 1-((a+b+c)*.25)
+    end
+  end
+
+  local function calcvertex3ao(sidesampler)
+    local a, b, c = sidesampler.block[6], sidesampler.block[7], sidesampler.block[5]
+    if b == 1 and c ==1 then
+      return .25 -- 1-(3*.25)
+    else
+      return 1-((a+b+c)*.25)
+    end
+  end
+
   local normals = ffi.new('vec3_t[4]', { {0,  0,  1,}, {0,  0,  1,}, {0,  0,  1,}, {0,  0,  1,}, })
-  local function addfront(i, x, y, z)
+  local function addfront(i, x, y, z, sidesampler)
     p[0].x=x+r; p[0].y=y-r; p[0].z=z+r
     p[1].x=x+r; p[1].y=y+r; p[1].z=z+r
     p[2].x=x-r; p[2].y=y+r; p[2].z=z+r
     p[3].x=x-r; p[3].y=y-r; p[3].z=z+r
 
-    --[[
-    colors[0].r=1; colors[0].g=0; colors[0].b=0;
-    colors[1].r=1; colors[1].g=0; colors[1].b=0;
-    colors[2].r=1; colors[2].g=0; colors[2].b=0;
-    colors[3].r=1; colors[3].g=0; colors[3].b=0;
-    --]]
-    colors[0].r=0; colors[0].g=1; colors[0].b=0;
-    colors[1].r=0; colors[1].g=1; colors[1].b=0;
-    colors[2].r=0; colors[2].g=1; colors[2].b=0;
-    colors[3].r=0; colors[3].g=1; colors[3].b=0;
+    local ao0 = calcvertex0ao(sidesampler)
+    local ao1 = calcvertex1ao(sidesampler)
+    local ao2 = calcvertex2ao(sidesampler)
+    local ao3 = calcvertex3ao(sidesampler)
+    colors[0].r=blockcolor.r*ao0; colors[0].g=blockcolor.g*ao0; colors[0].b=blockcolor.b*ao0;
+    colors[1].r=blockcolor.r*ao1; colors[1].g=blockcolor.g*ao1; colors[1].b=blockcolor.b*ao1;
+    colors[2].r=blockcolor.r*ao2; colors[2].g=blockcolor.g*ao2; colors[2].b=blockcolor.b*ao2;
+    colors[3].r=blockcolor.r*ao3; colors[3].g=blockcolor.g*ao3; colors[3].b=blockcolor.b*ao3;
+    
     updatearrays(i, p, normals, colors)
   end
 
   local normals = ffi.new('vec3_t[4]', { {0,  0, -1,}, {0,  0, -1,}, {0,  0, -1,}, {0,  0, -1,}, })
-  local function addback(i, x, y, z)
+  local function addback(i, x, y, z, sidesampler)
     p[0].x=x-r; p[0].y=y-r; p[0].z=z-r
     p[1].x=x-r; p[1].y=y+r; p[1].z=z-r
     p[2].x=x+r; p[2].y=y+r; p[2].z=z-r
     p[3].x=x+r; p[3].y=y-r; p[3].z=z-r
-    --[[
-    colors[0].r=0; colors[0].g=0; colors[0].b=1;
-    colors[1].r=0; colors[1].g=0; colors[1].b=1;
-    colors[2].r=0; colors[2].g=0; colors[2].b=1;
-    colors[3].r=0; colors[3].g=0; colors[3].b=1;
-    --]]
-    colors[0].r=0; colors[0].g=1; colors[0].b=0;
-    colors[1].r=0; colors[1].g=1; colors[1].b=0;
-    colors[2].r=0; colors[2].g=1; colors[2].b=0;
-    colors[3].r=0; colors[3].g=1; colors[3].b=0;
+    local ao0 = calcvertex0ao(sidesampler)
+    local ao1 = calcvertex1ao(sidesampler)
+    local ao2 = calcvertex2ao(sidesampler)
+    local ao3 = calcvertex3ao(sidesampler)
+    colors[0].r=blockcolor.r*ao0; colors[0].g=blockcolor.g*ao0; colors[0].b=blockcolor.b*ao0;
+    colors[1].r=blockcolor.r*ao1; colors[1].g=blockcolor.g*ao1; colors[1].b=blockcolor.b*ao1;
+    colors[2].r=blockcolor.r*ao2; colors[2].g=blockcolor.g*ao2; colors[2].b=blockcolor.b*ao2;
+    colors[3].r=blockcolor.r*ao3; colors[3].g=blockcolor.g*ao3; colors[3].b=blockcolor.b*ao3;
+    
     updatearrays(i, p, normals, colors)
   end
 
   local normals = ffi.new('vec3_t[4]', { {-1,  0, 0,}, {-1,  0, 0,}, {-1,  0, 0,}, {-1,  0, 0,}, })
-  local function addleft(i, x, y, z)
+  local function addleft(i, x, y, z, sidesampler)
     p[0].x=x-r; p[0].y=y-r; p[0].z=z+r
     p[1].x=x-r; p[1].y=y+r; p[1].z=z+r
     p[2].x=x-r; p[2].y=y+r; p[2].z=z-r
     p[3].x=x-r; p[3].y=y-r; p[3].z=z-r
-    --[[
-    colors[0].r=1; colors[0].g=1; colors[0].b=0;
-    colors[1].r=1; colors[1].g=1; colors[1].b=0;
-    colors[2].r=1; colors[2].g=1; colors[2].b=0;
-    colors[3].r=1; colors[3].g=1; colors[3].b=0;
-    --]]
-    colors[0].r=0; colors[0].g=1; colors[0].b=0;
-    colors[1].r=0; colors[1].g=1; colors[1].b=0;
-    colors[2].r=0; colors[2].g=1; colors[2].b=0;
-    colors[3].r=0; colors[3].g=1; colors[3].b=0;
+    local ao0 = calcvertex0ao(sidesampler)
+    local ao1 = calcvertex1ao(sidesampler)
+    local ao2 = calcvertex2ao(sidesampler)
+    local ao3 = calcvertex3ao(sidesampler)
+    colors[0].r=blockcolor.r*ao0; colors[0].g=blockcolor.g*ao0; colors[0].b=blockcolor.b*ao0;
+    colors[1].r=blockcolor.r*ao1; colors[1].g=blockcolor.g*ao1; colors[1].b=blockcolor.b*ao1;
+    colors[2].r=blockcolor.r*ao2; colors[2].g=blockcolor.g*ao2; colors[2].b=blockcolor.b*ao2;
+    colors[3].r=blockcolor.r*ao3; colors[3].g=blockcolor.g*ao3; colors[3].b=blockcolor.b*ao3;
+    
     updatearrays(i, p, normals, colors)
   end
 
   local normals = ffi.new('vec3_t[4]', { {1,  0,  0,}, {1,  0,  0,}, {1,  0,  0,}, {1,  0,  0,}, })
-  local function addright(i, x, y, z)
+  local function addright(i, x, y, z, sidesampler)
     p[0].x=x+r; p[0].y=y-r; p[0].z=z-r
     p[1].x=x+r; p[1].y=y+r; p[1].z=z-r
     p[2].x=x+r; p[2].y=y+r; p[2].z=z+r
     p[3].x=x+r; p[3].y=y-r; p[3].z=z+r
-    --[[
-    colors[0].r=0; colors[0].g=1; colors[0].b=1;
-    colors[1].r=0; colors[1].g=1; colors[1].b=1;
-    colors[2].r=0; colors[2].g=1; colors[2].b=1;
-    colors[3].r=0; colors[3].g=1; colors[3].b=1;
-    --]]
-    colors[0].r=0; colors[0].g=1; colors[0].b=0;
-    colors[1].r=0; colors[1].g=1; colors[1].b=0;
-    colors[2].r=0; colors[2].g=1; colors[2].b=0;
-    colors[3].r=0; colors[3].g=1; colors[3].b=0;
+    local ao0 = calcvertex0ao(sidesampler)
+    local ao1 = calcvertex1ao(sidesampler)
+    local ao2 = calcvertex2ao(sidesampler)
+    local ao3 = calcvertex3ao(sidesampler)
+    colors[0].r=blockcolor.r*ao0; colors[0].g=blockcolor.g*ao0; colors[0].b=blockcolor.b*ao0;
+    colors[1].r=blockcolor.r*ao1; colors[1].g=blockcolor.g*ao1; colors[1].b=blockcolor.b*ao1;
+    colors[2].r=blockcolor.r*ao2; colors[2].g=blockcolor.g*ao2; colors[2].b=blockcolor.b*ao2;
+    colors[3].r=blockcolor.r*ao3; colors[3].g=blockcolor.g*ao3; colors[3].b=blockcolor.b*ao3;
+    
     updatearrays(i, p, normals, colors)
   end
 
   local normals = ffi.new('vec3_t[4]', { {0,  1,  0,}, {0,  1,  0,}, {0,  1,  0,}, {0,  1,  0,}, })
-  local function addtop(i, x, y, z)
+  local function addtop(i, x, y, z, sidesampler)
     p[0].x=x+r; p[0].y=y+r; p[0].z=z+r
     p[1].x=x+r; p[1].y=y+r; p[1].z=z-r
     p[2].x=x-r; p[2].y=y+r; p[2].z=z-r
     p[3].x=x-r; p[3].y=y+r; p[3].z=z+r
+    local ao0 = calcvertex0ao(sidesampler)
+    local ao1 = calcvertex1ao(sidesampler)
+    local ao2 = calcvertex2ao(sidesampler)
+    local ao3 = calcvertex3ao(sidesampler)
+    colors[0].r=blockcolor.r*ao0; colors[0].g=blockcolor.g*ao0; colors[0].b=blockcolor.b*ao0;
+    colors[1].r=blockcolor.r*ao1; colors[1].g=blockcolor.g*ao1; colors[1].b=blockcolor.b*ao1;
+    colors[2].r=blockcolor.r*ao2; colors[2].g=blockcolor.g*ao2; colors[2].b=blockcolor.b*ao2;
+    colors[3].r=blockcolor.r*ao3; colors[3].g=blockcolor.g*ao3; colors[3].b=blockcolor.b*ao3;
+    
 
-    local cg = math.random(9, 10)/10
-    colors[0].r=0; colors[0].g=cg; colors[0].b=0;
-    colors[1].r=0; colors[1].g=cg; colors[1].b=0;
-    colors[2].r=0; colors[2].g=cg; colors[2].b=0;
-    colors[3].r=0; colors[3].g=cg; colors[3].b=0;
     updatearrays(i, p, normals, colors)
   end
 
   local normals = ffi.new('vec3_t[4]', { {0, -1,  0,}, {0, -1,  0,}, {0, -1,  0,}, {0, -1,  0,}, })
-  local function addbottom(i, x, y, z)
+  local function addbottom(i, x, y, z, sidesampler)
     p[0].x=x+r; p[0].y=y-r; p[0].z=z-r
     p[1].x=x+r; p[1].y=y-r; p[1].z=z+r
     p[2].x=x-r; p[2].y=y-r; p[2].z=z+r
     p[3].x=x-r; p[3].y=y-r; p[3].z=z-r
-    --[[
-    colors[0].r=1; colors[0].g=0; colors[0].b=1;
-    colors[1].r=1; colors[1].g=0; colors[1].b=1;
-    colors[2].r=1; colors[2].g=0; colors[2].b=1;
-    colors[3].r=1; colors[3].g=0; colors[3].b=1;
-    --]]
-    colors[0].r=0; colors[0].g=1; colors[0].b=0;
-    colors[1].r=0; colors[1].g=1; colors[1].b=0;
-    colors[2].r=0; colors[2].g=1; colors[2].b=0;
-    colors[3].r=0; colors[3].g=1; colors[3].b=0;
+    local ao0 = calcvertex0ao(sidesampler)
+    local ao1 = calcvertex1ao(sidesampler)
+    local ao2 = calcvertex2ao(sidesampler)
+    local ao3 = calcvertex3ao(sidesampler)
+    colors[0].r=blockcolor.r*ao0; colors[0].g=blockcolor.g*ao0; colors[0].b=blockcolor.b*ao0;
+    colors[1].r=blockcolor.r*ao1; colors[1].g=blockcolor.g*ao1; colors[1].b=blockcolor.b*ao1;
+    colors[2].r=blockcolor.r*ao2; colors[2].g=blockcolor.g*ao2; colors[2].b=blockcolor.b*ao2;
+    colors[3].r=blockcolor.r*ao3; colors[3].g=blockcolor.g*ao3; colors[3].b=blockcolor.b*ao3;
+    
     updatearrays(i, p, normals, colors)
   end
 
@@ -349,6 +458,8 @@ do
   end
 
   local sampler = ffi.new('voxelsampler_t')
+  local sidesampler = ffi.new('sidesampler_t')
+
   function M.totriangles(chunk, wx, wy, wz)
     indicesarray:clear()
     positionsarray:clear()
@@ -364,7 +475,14 @@ do
       local wx = wx + (x-midpoint)
 
       for z = 1, size do
-        local wz = wz + (z-midpoint)
+        local wz = -(wz + (z-midpoint)) --start at +z count forward to -z
+
+        local perlin = math.perlin((1000+wx)/300, (1000+wz)/100)
+        local cg = math.lerp(.9, 1, perlin) 
+        local cr = math.lerp(.3, .5, perlin)
+        local cb = math.lerp(.3, .1, perlin)
+
+        blockcolor.r=cr; blockcolor.g=cg; blockcolor.b=cb;
 
         for y = 1, size do
           local wy = wy + (y-midpoint)
@@ -372,13 +490,36 @@ do
           sampler:samplechunk(data, x, z, y)
 
           if sampler.self ~= 0 then
-            if sampler.top == 0 then addtop(i, wx, wy, wz); i=i+4 end
-            if sampler.bottom == 0 then addbottom(i, wx, wy, wz)  i=i+4 end
-            if sampler.left <= 0 then addleft(i, wx, wy, wz) i=i+4  end
-            if sampler.right <= 0 then addright(i, wx, wy, wz) i=i+4  end
-            if sampler.front <= 0 then addfront(i, wx, wy, wz) i=i+4  end
-            if sampler.back <= 0 then addback(i, wx, wy, wz) i=i+4  end
-
+            if sampler.left <= 0 then 
+              sidesampler:samplechunkleft(data, x, z, y) 
+              addleft(i, wx, wy, wz, sidesampler) 
+              i=i+4  
+            end
+            if sampler.right <= 0 then 
+              sidesampler:samplechunkright(data, x, z, y) 
+              addright(i, wx, wy, wz, sidesampler) 
+              i=i+4  
+            end
+            if sampler.front <= 0 then 
+              sidesampler:samplechunkfront(data, x, z, y) 
+              addfront(i, wx, wy, wz, sidesampler) 
+              i=i+4  
+            end
+            if sampler.back <= 0 then
+              sidesampler:samplechunkback(data, x, z, y) 
+              addback(i, wx, wy, wz, sidesampler) 
+              i=i+4  
+            end
+            if sampler.top == 0 then
+              sidesampler:samplechunktop(data, x, z, y) 
+              addtop(i, wx, wy, wz, sidesampler)
+              i=i+4 
+            end
+            if sampler.bottom == 0 then 
+              sidesampler:samplechunkbottom(data, x, z, y) 
+              addbottom(i, wx, wy, wz, sidesampler)
+              i=i+4 
+            end
           end
         end
       end
