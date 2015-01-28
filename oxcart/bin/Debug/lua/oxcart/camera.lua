@@ -41,6 +41,25 @@ function mt:lookat(polar, azimuth)
   return self
 end
 
+function mt:lookatpoint(x, y, z)
+  local p = self.position
+  local Z = self.axes.z
+
+  Z.x = p.x - x 
+  Z.y = p.y - y
+  Z.z = p.z - z
+
+  C.vec3_normalize(Z)
+  C.vec3_cross(up, Z, self.axes.x)
+  C.vec3_cross(self.axes.z, self.axes.x, self.axes.y)
+
+  target.x = x
+  target.y = y
+  target.z = z
+  self.transform = C.mat4_lookat(p, target, up)
+  return self
+end
+
 function mt:moveto(x, y, z)
   local p = self.position
   local Z = self.axes.z

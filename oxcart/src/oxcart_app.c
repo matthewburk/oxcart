@@ -213,6 +213,8 @@ int main(int argc, char** argv)
     oxcart_delegate_update(elapsed);
   }
 
+  lua_close(L);
+
   _window_terminate();
   _monitor_terminate();
   PHYSFS_deinit();

@@ -69,6 +69,7 @@ local M = setmetatable({}, {
 	end
 })
 
+
 for i, name in ipairs {
   'glGenVertexArray',
   'glGenBuffer',
@@ -92,6 +93,20 @@ for i, name in ipairs {
     local array = ffi.new('GLuint[1]')
     naked(1, array)
     return array[0]
+  end
+end
+
+for i, name in ipairs {
+  'glDeleteVertexArray',
+  'glDeleteBuffer',
+} do
+  local plural = name..'s'
+  local naked = M[plural]
+
+  M[name] = function(oneitem)
+    local array = ffi.new('GLuint[1]')
+    array[0] = oneitem
+    M[plural](1, array)
   end
 end
 

@@ -14,6 +14,9 @@ typedef struct rect {
 
 rect_t oxcart_get_window_rect();
 
+void* malloc(size_t);
+void free(void*);
+
 void Sleep(int ms);
 ]]
 

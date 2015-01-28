@@ -8,67 +8,21 @@ local M = {}
 
 local root = cel.new():link(cel.root, 'fill')
 
-local window do --window
-  window = cel.window.new(300, 300)
-    :settitle('A window with stuff')
-    :adddefaultcontrols()
-    :link(root)
+M.cameraspeed =.02 
 
-  local scroll = cel.scroll.new()
-    :link(window, 'fill')
-
-  cel.col { gap=2, 
-    { face='#888888', --make col slots light gray
-      link='center',
-      
-      cel.editbox.new('HELLO', 200),
-      cel.editbox.new('hello_again', 200),
-      cel.label.new('label'),
-      cel.button.new(200, 50),
-      cel.text.new('text\nit wraps'),
-      cel.textbutton.new('text\nbutton'),
-      cel.text.new [[[
-      if the text starts with '['
-      and a new line then the extra space
-      at the beginning of each of these
-      lines is removed. The trailing new line
-      is also removed.  Handy! 
-      ]],
-      cel.text.new [[
-      Here is one wihout the extra '['.
-      Notice all the extra space.
-      ]],
-      
-    },
-
-    { face='#889988', --make col slots light gray with a bit more green
-      link = 'width', --so that text will shink and grow 
-      cel.text.new([[[
-      By deafult text wraps at new lines, 
-      but you can make it wrap at word boundaries as well.  Here is the code form the 'scroll' linker.
-      M['scroll'] = function(hw, hh, x, y, w, h, fillx, filly)
-        if x >= 0 or w <= hw then 
-          x = 0
-        elseif x + w < hw then
-          x = hw - w
-        end
-
-        if y >= 0 or h <= hh then
-          y = 0
-        elseif y + h < hh then
-          y = hh - h
-        end
-
-        return x, y, fillx and hw or w, filly and hh or h
+M.cameracontrols = cel.row {
+  cel.textbutton.new('-'),
+  cel.editbox {
+    w=100,
+    onkeypress = function(self, key, intercepted)
+      if key == cel.keyboard.keys.enter then
+        M.cameraspeed = tonumber(self:gettext())
       end
-      ]]):wrap('word'),
-    }
-  }:link(scroll, 'scroll', true, false) --look at cel.linkers['scroll'] to see what this does
+    end
+  },
+  cel.textbutton.new('+'),
+}:link(root, 'center.bottom')
 
-  function window:onmousedown()
-    window:raise() --put on top of other cels
-  end
-end
 
 local fpslabel = cel.label.new('')
   :link(root, 'center.top')

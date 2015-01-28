@@ -102,6 +102,7 @@ int oxcart_lua_pcall(lua_State* L, int nargs, int nresults)
   if (status) {
     #ifdef _DEBUG
       fprintf_s(stderr, "%s\n", lua_tostring(L, -1));
+	  OXCART_ASSERT(!status);
     #endif
 
     lua_pop(L, 1);
