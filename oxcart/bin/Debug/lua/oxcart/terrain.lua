@@ -161,15 +161,15 @@ function setgridaabb(_x1, _y1, _z1, _x2, _y2, _z2)
   end
 end
 
-local perlin = math.perlin
-
 local function readcolor(blockcolor, blockvalue, x, y, z)
-  --local perlin = math.perlin((1000+x)/10, (1000+z)/10)
+  --local perlin = perlin2d((1000+x)/10, (1000+z)/10)
   blockcolor.g = 1-- math.lerp(.95, 1, perlin) 
-  blockcolor.r = .1 --math.lerp(.1, .2, math.perlin((1000+x)/100, (1000+z)/100))
+  blockcolor.r = .1 --math.lerp(.1, .2, perlin2d((1000+x)/100, (1000+z)/100))
   blockcolor.b = 0
   blockcolor.a = 1
 end
+
+local perlin2d = math.noise.simplex2d
 
 local function fillchunk(chunk, x, y, z, left, right, front, back)
   local data = chunk.data
@@ -186,15 +186,15 @@ local function fillchunk(chunk, x, y, z, left, right, front, back)
       local col = grid[z]
       local samplez = wz+z
 
-      local perlin = (math.perlin((1000+samplex)/10, (1000+samplez)/10) + 1)/2
+      local perlin = (perlin2d((1000+samplex)/10, (1000+samplez)/10) + 1)/2
       local r = 0
       local g = math.lerp(200, 255, perlin)
       local b = 0
-      --blockcolor.r = .1 --math.lerp(.1, .2, math.perlin((1000+x)/100, (1000+z)/100))
+      --blockcolor.r = .1 --math.lerp(.1, .2, perlin2d((1000+x)/100, (1000+z)/100))
       --blockcolor.b = 0
       --blockcolor.a = 1
 
-      local colh = math.floor(size * (math.perlin(samplex/300, samplez/300)+1)/2)
+      local colh = math.floor(size * (perlin2d(samplex/300, samplez/300)+1)/2)
 
       for y = 1, colh do
         col[y].value = 1

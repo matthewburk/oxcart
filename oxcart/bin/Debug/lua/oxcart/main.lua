@@ -16,8 +16,6 @@ local wc = {
   z = 0,
 }
 
-dprint('wc', wc.x, wc.y, wc.z)
-
 local mouse = oxcart.gui.mouse
 local keyboard = oxcart.gui.keyboard
 local camera = oxcart.camera.new()
@@ -126,11 +124,10 @@ function oxcart.activeupdate(elapsed, deltaelapsed)
 
   updatecamera()
   local buffers = {}
-  oxcart.terrain.updatebuffers(buffers, camera.position.x, 0, camera.position.z, 5)
+  oxcart.terrain.updatebuffers(buffers, camera.position.x, 0, camera.position.z, 10)
 
   local y = oxcart.terrain.getelevation(creature.x, creature.z)
   if y then
-    dprint('y', y)
     creature:moveto(creature.x, y+1, creature.z)
   end
 

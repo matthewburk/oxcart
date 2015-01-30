@@ -8,7 +8,6 @@ local C = ffi.C
 require 'strict'
 
 local math = require('oxcart.math')
-local perlin = math.perlin
 local vector = require 'oxcart.vector'
 
 local M = {}
@@ -98,8 +97,6 @@ typedef struct block {
 ]]
 
 local block_t = ffi.typeof('block_t')
-
-dprint('ffi.sizeof(block_t)', ffi.sizeof(block_t))
 
 local function makechunktype(size)
   local col_t = ffi.typeof('block_t[$]', size+2)
