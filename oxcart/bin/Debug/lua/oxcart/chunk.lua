@@ -179,18 +179,6 @@ typedef struct sidesampler {
 
   function mt:samplechunktop(chunk, igrid, icol, iblock)
     iblock = iblock+1
-    self.block[0] = chunk[igrid+1][icol-1][iblock].value
-    self.block[1] = chunk[igrid+1][icol  ][iblock].value
-    self.block[2] = chunk[igrid+1][icol+1][iblock].value
-    self.block[3] = chunk[igrid  ][icol+1][iblock].value
-    self.block[4] = chunk[igrid-1][icol+1][iblock].value
-    self.block[5] = chunk[igrid-1][icol  ][iblock].value
-    self.block[6] = chunk[igrid-1][icol-1][iblock].value
-    self.block[7] = chunk[igrid  ][icol-1][iblock].value
-  end
-
-  function mt:samplechunkbottom(chunk, igrid, icol, iblock)
-    iblock = iblock-1
     self.block[0] = chunk[igrid+1][icol+1][iblock].value
     self.block[1] = chunk[igrid+1][icol  ][iblock].value
     self.block[2] = chunk[igrid+1][icol-1][iblock].value
@@ -201,20 +189,20 @@ typedef struct sidesampler {
     self.block[7] = chunk[igrid  ][icol+1][iblock].value
   end
 
-  function mt:samplechunkleft(chunk, igrid, icol, iblock)
-    igrid = igrid-1
-    self.block[0] = chunk[igrid][icol-1][iblock-1].value
-    self.block[1] = chunk[igrid][icol-1][iblock  ].value
-    self.block[2] = chunk[igrid][icol-1][iblock+1].value
-    self.block[3] = chunk[igrid][icol  ][iblock+1].value
-    self.block[4] = chunk[igrid][icol+1][iblock+1].value
-    self.block[5] = chunk[igrid][icol+1][iblock  ].value
-    self.block[6] = chunk[igrid][icol+1][iblock-1].value
-    self.block[7] = chunk[igrid][icol  ][iblock-1].value
+  function mt:samplechunkbottom(chunk, igrid, icol, iblock)
+    iblock = iblock-1
+    self.block[0] = chunk[igrid+1][icol-1][iblock].value
+    self.block[1] = chunk[igrid+1][icol  ][iblock].value
+    self.block[2] = chunk[igrid+1][icol+1][iblock].value
+    self.block[3] = chunk[igrid  ][icol+1][iblock].value
+    self.block[4] = chunk[igrid-1][icol+1][iblock].value
+    self.block[5] = chunk[igrid-1][icol  ][iblock].value
+    self.block[6] = chunk[igrid-1][icol-1][iblock].value
+    self.block[7] = chunk[igrid  ][icol-1][iblock].value
   end
 
-  function mt:samplechunkright(chunk, igrid, icol, iblock)
-    igrid = igrid+1
+  function mt:samplechunkleft(chunk, igrid, icol, iblock)
+    igrid = igrid-1
     self.block[0] = chunk[igrid][icol+1][iblock-1].value
     self.block[1] = chunk[igrid][icol+1][iblock  ].value
     self.block[2] = chunk[igrid][icol+1][iblock+1].value
@@ -225,8 +213,20 @@ typedef struct sidesampler {
     self.block[7] = chunk[igrid][icol  ][iblock-1].value
   end
 
+  function mt:samplechunkright(chunk, igrid, icol, iblock)
+    igrid = igrid+1
+    self.block[0] = chunk[igrid][icol-1][iblock-1].value
+    self.block[1] = chunk[igrid][icol-1][iblock  ].value
+    self.block[2] = chunk[igrid][icol-1][iblock+1].value
+    self.block[3] = chunk[igrid][icol  ][iblock+1].value
+    self.block[4] = chunk[igrid][icol+1][iblock+1].value
+    self.block[5] = chunk[igrid][icol+1][iblock  ].value
+    self.block[6] = chunk[igrid][icol+1][iblock-1].value
+    self.block[7] = chunk[igrid][icol  ][iblock-1].value
+  end
+
   function mt:samplechunkfront(chunk, igrid, icol, iblock)
-    icol = icol-1
+    icol = icol+1
     self.block[0] = chunk[igrid+1][icol][iblock-1].value
     self.block[1] = chunk[igrid+1][icol][iblock  ].value
     self.block[2] = chunk[igrid+1][icol][iblock+1].value
@@ -238,7 +238,7 @@ typedef struct sidesampler {
   end
 
   function mt:samplechunkback(chunk, igrid, icol, iblock)
-    icol = icol+1
+    icol = icol-1
     self.block[0] = chunk[igrid-1][icol][iblock-1].value
     self.block[1] = chunk[igrid-1][icol][iblock  ].value
     self.block[2] = chunk[igrid-1][icol][iblock+1].value
