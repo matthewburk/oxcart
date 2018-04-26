@@ -3,6 +3,7 @@ local gl = require 'opengl'
 local bit = require 'bit'
 local C = ffi.C
 local math = require 'oxcart.math'
+local cel = require 'oxcart.cel'
 require 'oxcart.program'
 require 'oxcart.camera'
 require 'oxcart.chunk'
@@ -19,7 +20,7 @@ local wc = {
 local mouse = oxcart.gui.mouse
 local keyboard = oxcart.gui.keyboard
 local camera = oxcart.camera.new()
-local cameraspeed = .1
+local cameraspeed = .5
 local creature = oxcart.creature.new():moveto(0, 10, 0)
 do
   local polar = 120 * 10
@@ -38,7 +39,7 @@ do
 end
 
 local function updatecamera()
-  cameraspeed = oxcart.gui.cameraspeed or .03
+  cameraspeed = oxcart.gui.cameraspeed or .5
   if keyboard:isdown(keyboard.space) then
     if keyboard:isdown(keyboard.shift) then
       camera:moveup(-cameraspeed)
@@ -70,21 +71,28 @@ local function updatecamera()
   if keyboard:isdown(keyboard.down) then creature:moveto(creature.x, creature.y, creature.z+speed) end
 end
 
-local mat4_identity = C.mat4_identity()
-
 local matrices = ffi.new('oxcart_matrices_t') do
-  matrices.projection = C.mat4_perspective(45, oxcart.window.w / oxcart.window.h, 1, 10000)
-  matrices.view = C.mat4_identity()
-  matrices.model = C.mat4_identity()
-  matrices.normaltransform = C.mat3_identity()
+  matrices.projection = math.mat4.perspective(45, oxcart.window.w / oxcart.window.h, 1, 10000)
+  matrices.view = math.mat4.identity()
+  matrices.model = math.mat4.identity()
+  matrices.normaltransform = math.mat3.identity()
 end
 
 function oxcart.onwindowresized()
-  matrices.projection = C.mat4_perspective(45, oxcart.window.w / oxcart.window.h, 1, 10000)
+  matrices.projection = math.mat4.perspective(45, oxcart.window.w / oxcart.window.h, 1, 10000)
   gl.glViewport(0, 0, oxcart.window.w, oxcart.window.h)
 end
 
-local function drawbuffers(buffers)
+local frustum = require 'oxcart.geometry.frustum'
+local viewfrustum = frustum.new()
+local viewfrustumtransform = math.mat4.identity()
+
+local verticeslbl = cel.label.new('Vertices'):link(cel.root)
+local function drawchunks(chunks)
+  local nvertices = 0
+
+  viewfrustum:update(viewfrustumtransform:multiply(matrices.projection, matrices.view))
+
   gl.glEnable(GL_CULL_FACE)
   gl.glCullFace(GL_BACK);
   gl.glEnable(GL_DEPTH_TEST)
@@ -94,16 +102,23 @@ local function drawbuffers(buffers)
   --gl.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
 
-  for i = 1, #buffers do
-    local buffer = buffers[i]
-    matrices.model = buffer.transform or mat4_identity 
-    oxcart.uniformbuffer.matrices.update(matrices)
+  for i = 1, #chunks do
+    local chunk = chunks[i]
+    if viewfrustum:intersectsaabb(chunk.aabb) then
+      if chunk.transform then
+        matrices.model:copy(chunk.transform)
+      else
+        matrices.model:identity()
+      end
 
-    gl.glUseProgram(buffer.program.id)
-    gl.glBindVertexArray(buffer.vao)
-    gl.glDrawElements(GL_TRIANGLES, buffer.nelements, GL_UNSIGNED_INT, nil)
+      oxcart.uniformbuffer.matrices.update(matrices)
+
+      chunk:draw(nvertices)
+      nvertices = nvertices + chunk.triangles.nelements
+    end
   end
 
+  verticeslbl:printf('Vertices %d', nvertices)
   --gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 end
 
@@ -112,7 +127,7 @@ local light = ffi.new('oxcart_light_t', {
   color = ffi.new('vec4_t', {1, 1, 1, 1}),
   ambientcoefficient = .25,
 })
-C.vec4_normalize(light.surfacetolight)
+light.surfacetolight:normalize()
 
 function oxcart.idleupdate(elapsed, deltaelapsed)
   C.Sleep(100)
@@ -123,8 +138,8 @@ function oxcart.activeupdate(elapsed, deltaelapsed)
   gl.glClear(bit.bor(GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT))
 
   updatecamera()
-  local buffers = {}
-  oxcart.terrain.updatebuffers(buffers, camera.position.x, 0, camera.position.z, 10)
+  local chunks = {}
+  oxcart.terrain.updatechunks(chunks, camera.position.x, 0, camera.position.z, 8)
 
   local y = oxcart.terrain.getelevation(creature.x, creature.z)
   if y then
@@ -137,8 +152,8 @@ function oxcart.activeupdate(elapsed, deltaelapsed)
   oxcart.uniformbuffer.matrices.update(matrices)
   oxcart.uniformbuffer.light.update(light)
 
-  buffers[#buffers+1] = creature.buffer
-  drawbuffers(buffers)
+  --chunks[#chunks+1] = creature.buffer
+  drawchunks(chunks)
 
   oxcart.gui.update(elapsed, deltaelapsed)
   oxcart.gui.draw()

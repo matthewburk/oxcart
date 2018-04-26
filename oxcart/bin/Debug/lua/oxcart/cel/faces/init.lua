@@ -3,6 +3,7 @@ require 'oxcart.graphics'
 require 'oxcart.geometry'
 require 'oxcart.program'
 require 'oxcart.font'
+local math = require 'oxcart.math'
 local vector = require 'oxcart.vector'
 local cel = require 'cel'
 local ffi = require 'ffi'
@@ -416,7 +417,7 @@ do
       l = math_max(clip.l, x),
       r = math_min(clip.r, x+w),
       t = math_max(clip.t, y),
-      b = math_max(clip.b, y+h),
+      b = math_min(clip.b, y+h),
     }
     crc.clip = t 
     return clip
@@ -496,9 +497,9 @@ return function()
   local t, metadescription = cel.describe()
 
   if t then
-    matrices.projection = C.mat4_orthographic(t.w, t.h)
-    matrices.view = C.mat4_identity()
-    matrices.model = C.mat4_identity()
+    matrices.projection:orthographic(t.w, t.h)
+    matrices.view:identity()
+    matrices.model:identity()
 
     oxcart.uniformbuffer.matrices.update(matrices)
 

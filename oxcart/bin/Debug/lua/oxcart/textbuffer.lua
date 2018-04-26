@@ -5,6 +5,8 @@ local vector = require 'oxcart.vector'
 local gl = require 'opengl'
 local ffi = require 'ffi'
 local C = ffi.C
+local math = require 'oxcart.math'
+local mat4 = math.mat4
 
 ffi.cdef[[
 typedef struct oxcart_text_vertex {
@@ -179,9 +181,9 @@ program.sampler = gl.glGetUniformLocation(program.id, "sampler")
 local draw do
   local matrices = ffi.new('oxcart_matrices_t')
 
-  matrices.projection = C.mat4_orthographic(oxcart.window.w, oxcart.window.h)
-  matrices.view = C.mat4_identity()
-  matrices.model = C.mat4_identity()
+  matrices.projection:orthographic(oxcart.window.w, oxcart.window.h)
+  matrices.view:identity()
+  matrices.model:identity()
 
   function mt:draw(x, y, z)
     gl.glEnable(GL_BLEND)
@@ -190,7 +192,7 @@ local draw do
 
     gl.glUseProgram(program.id)
 
-    matrices.model = C.mat4_translate(x, y, z)
+    matrices.model:translate(x, y, z)
 
     oxcart.uniformbuffer.matrices.update(matrices)
 

@@ -8,7 +8,7 @@ local M = {}
 
 local root = cel.new():link(cel.root, 'fill')
 
-M.cameraspeed =.02 
+M.cameraspeed =.5
 
 M.cameracontrols = cel.row {
   cel.textbutton.new('-'),

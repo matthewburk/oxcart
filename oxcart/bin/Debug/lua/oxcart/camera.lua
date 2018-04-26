@@ -1,6 +1,8 @@
-require 'oxcart.math'
 local ffi = require 'ffi'
+local math = require 'oxcart.math'
 local C = ffi.C
+local mat4 = math.mat4
+
 
 
 local M = {}
@@ -37,7 +39,7 @@ function mt:lookat(polar, azimuth)
   target.x = p.x - Z.x
   target.y = p.y - Z.y
   target.z = p.z - Z.z
-  self.transform = C.mat4_lookat(p, target, up)
+  self.transform = mat4.lookat(p, target, up)
   return self
 end
 
@@ -49,14 +51,14 @@ function mt:lookatpoint(x, y, z)
   Z.y = p.y - y
   Z.z = p.z - z
 
-  C.vec3_normalize(Z)
-  C.vec3_cross(up, Z, self.axes.x)
-  C.vec3_cross(self.axes.z, self.axes.x, self.axes.y)
+  Z:normalize()
+  self.axes.x:cross(up, Z)
+  self.axes.y:cross(Z, self.axes.x)
 
   target.x = x
   target.y = y
   target.z = z
-  self.transform = C.mat4_lookat(p, target, up)
+  self.transform = mat4.lookat(p, target, up)
   return self
 end
 
@@ -70,7 +72,7 @@ function mt:moveto(x, y, z)
   target.x = p.x - Z.x
   target.y = p.y - Z.y
   target.z = p.z - Z.z
-  self.transform = C.mat4_lookat(p, target, up)
+  self.transform = mat4.lookat(p, target, up)
   return self
 end
 
@@ -84,7 +86,7 @@ function mt:moveforward(scalar)
   target.x = p.x - Z.x
   target.y = p.y - Z.y
   target.z = p.z - Z.z
-  self.transform = C.mat4_lookat(p, target, up)
+  self.transform = mat4.lookat(p, target, up)
 
   return self
 end
@@ -100,7 +102,7 @@ function mt:moveright(scalar)
   target.x = p.x - Z.x
   target.y = p.y - Z.y
   target.z = p.z - Z.z
-  self.transform = C.mat4_lookat(p, target, up)
+  self.transform = mat4.lookat(p, target, up)
 
   return self
 end
@@ -116,7 +118,7 @@ function mt:moveup(scalar)
   target.x = p.x - Z.x
   target.y = p.y - Z.y
   target.z = p.z - Z.z
-  self.transform = C.mat4_lookat(p, target, up)
+  self.transform = mat4.lookat(p, target, up)
 
   return self
 end
@@ -127,7 +129,7 @@ local axes_t = ffi.typeof[[ struct { vec3_t x; vec3_t y; vec3_t z; } ]]
 function M.new()
   local camera =  {
     axes = axes_t(),
-    transform = C.mat4_identity(),
+    transform = mat4.identity(),
     position = vec3_t(0, 0, 0),
   }
   return setmetatable(camera, mt)

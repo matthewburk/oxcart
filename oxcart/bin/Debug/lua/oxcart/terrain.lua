@@ -3,6 +3,7 @@ local gl = require 'opengl'
 local math = require 'oxcart.math'
 local vector = require 'oxcart.vector'
 local C = ffi.C
+local mat4 = math.mat4
 require 'oxcart.geometry'
 require 'oxcart.program'
 require 'oxcart.chunk'
@@ -103,7 +104,7 @@ end
 local function free(chunk)
   heap[#heap+1] = chunk
   heap[chunk] = nil
-  chunk.buffers = nil
+  chunk:reset()
 end
 
 
@@ -194,7 +195,7 @@ local function fillchunk(chunk, x, y, z, left, right, front, back)
       --blockcolor.b = 0
       --blockcolor.a = 1
 
-      local colh = math.floor(size * (perlin2d(samplex/300, samplez/300)+1)/2)
+      local colh = math.floor(4*size * (perlin2d(samplex/300, samplez/300)+1)/2) - size*y
 
       for y = 1, colh do
         col[y].value = 1
@@ -211,7 +212,7 @@ end
 
 
 
---[[
+---[[
 local loadchunks = coroutine.wrap(function()
   while true do
     local chunk = grid.loadingchunks[#grid.loadingchunks]
@@ -221,20 +222,22 @@ local loadchunks = coroutine.wrap(function()
       fillchunk(chunk, chunk.x, chunk.y, chunk.z)
       local l = getchunk(chunk.x-1, chunk.y, chunk.z+0)
       local r = getchunk(chunk.x+1, chunk.y, chunk.z+0)
-      local f = getchunk(chunk.x+0, chunk.y, chunk.z-1)
-      local k = getchunk(chunk.x+0, chunk.y, chunk.z+1)
+      local f = getchunk(chunk.x+0, chunk.y, chunk.z+1)
+      local k = getchunk(chunk.x+0, chunk.y, chunk.z-1)
 
       coroutine.yield()
       stitchchunks(chunk, l, r, f, k)
       coroutine.yield()
-      chunk.buffer = oxcart.chunk.totriangles(chunk, readcolor)
-      chunk.buffer.transform = C.mat4_translate(chunk.x*chunk.size, chunk.y*chunk.size, -chunk.z*chunk.size)
+      oxcart.chunk.totriangles(chunk, readcolor)
+      chunk.transform = mat4.translate(chunk.x*chunk.size, chunk.y*chunk.size, chunk.z*chunk.size)
+      chunk.aabb:transform(chunk.transform)
       
     end
     coroutine.yield()
   end
 end)
 --]]
+--[[
 local loadchunks = function()
   for i = 1, #grid.loadingchunks do
     local chunk = grid.loadingchunks[i]
@@ -246,34 +249,36 @@ local loadchunks = function()
     local k = getchunk(chunk.x+0, chunk.y, chunk.z-1)
 
     stitchchunks(chunk, l, r, f, k)
-    chunk.buffer = oxcart.chunk.totriangles(chunk, readcolor)
-    chunk.buffer.transform = C.mat4_translate(chunk.x*chunk.size, chunk.y*chunk.size, chunk.z*chunk.size)
+    oxcart.chunk.totriangles(chunk, readcolor)
+    chunk.transform = mat4.translate(chunk.x*chunk.size, chunk.y*chunk.size, chunk.z*chunk.size)
+    chunk.aabb:transform(chunk.transform)
   end
 end
+--]]
 
 --wx, wy, wz is center of sphere in world coordinates
 --radius of sphere chunks
 --chunks are loaded and unloaded as necessary
-function M.updatebuffers(buffers, wx, wy, wz, radius)
+function M.updatechunks(chunks, wx, wy, wz, radius)
   wy = 0 --TODO
 
   local x = math.floor(wx/chunksize)
   local y = math.floor(wy/chunksize)
   local z = math.floor(wz/chunksize)
 
-  setgridaabb(x-radius, y, z-radius, x+radius+1, y+1, z+radius+1)
+  setgridaabb(x-radius, 0, z-radius, x+radius+1, 4, z+radius+1)
 
   loadchunks()
 
-  local nbuffers = 0
+  local nchunks = 0
   for i = 1, #grid.chunks do
-    if grid.chunks[i].buffer then
-      nbuffers = nbuffers + 1
-      buffers[nbuffers] = grid.chunks[i].buffer  
+    if grid.chunks[i].triangles then
+      nchunks = nchunks + 1
+      chunks[nchunks] = grid.chunks[i]
     end
   end
 
-  return buffers, nbuffers
+  return chunks, nchunks
 end
 
 
@@ -301,5 +306,12 @@ function M.getelevation(wx, wz)
 end
 
 oxcart.terrain = M
+
+--[[
+local L = require 'oxcart.L'
+
+L.new()
+--]]
+
 
 return M

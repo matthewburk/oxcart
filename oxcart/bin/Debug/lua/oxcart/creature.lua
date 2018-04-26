@@ -3,6 +3,7 @@ local gl = require 'opengl'
 local math = require 'oxcart.math'
 local vector = require 'oxcart.vector'
 local C = ffi.C
+local mat4 = math.mat4
 require 'oxcart.geometry'
 require 'oxcart.program'
 require 'oxcart.chunk'
@@ -10,7 +11,6 @@ require 'oxcart.chunk'
 local M = {}
 
 local chunksize = 1
-local buffer 
 
 local mt = {}
 mt.__index = mt
@@ -19,7 +19,8 @@ function mt:moveto(wx, wy, wz)
   self.x = wx
   self.y = wy
   self.z = wz
-  self.buffer.transform = C.mat4_translate(wx-chunksize/2, wy, wz-chunksize/2)
+  self.chunk.transform:translate(wx-chunksize/2, wy, wz-chunksize/2)
+  self.chunk.aabb:transform(self.chunk.transform)
   return self
 end
 
@@ -29,12 +30,13 @@ function M.new()
   block.value = 1
   block.r = 255
 
+  oxcart.chunk.totriangles(chunk)
+
   return setmetatable({
     x = 0,
     y = 0, 
     z = 0,
     chunk=chunk,
-    buffer=oxcart.chunk.totriangles(chunk)
   }, mt)
 end
 

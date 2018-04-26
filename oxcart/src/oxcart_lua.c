@@ -325,59 +325,175 @@ static const char* _lua_freader(lua_State* L, void* data, size_t* size)
 
 #include "oxcart_math.h"
 
-OXCART_API oxcart_mat4_t mat4_lookat(const oxcart_vec3_t* eye, const oxcart_vec3_t* target, const oxcart_vec3_t* up)
+
+
+
+OXCART_API void vec3_zero(oxcart_vec3_t* r)
 {
-	return oxcart_mat4_lookat(eye, target, up);
+	*r = oxcart_vec3_zero();
 }
-
-OXCART_API oxcart_mat4_t mat4_perspective(float fovy, float aspect, float n, float f)
+OXCART_API void vec3_set(float x, float y, float z, oxcart_vec3_t* r)
 {
-	return oxcart_mat4_perspective(fovy, aspect, n, f);
+	*r = oxcart_vec3_set(x, y, z);
 }
-
-OXCART_API oxcart_mat4_t mat4_rotate(float x, float y, float z, float angle)
+OXCART_API void vec3_setv2(const oxcart_vec2_t* v1, float z, oxcart_vec3_t* r)
 {
-	return oxcart_mat4_rotate(x, y, z, angle);
+	*r = oxcart_vec3_setv2(v1, z);
 }
-
-OXCART_API oxcart_mat4_t mat4_translate(float x, float y, float z)
+OXCART_API void vec3_add(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2, oxcart_vec3_t* r)
 {
-	return oxcart_mat4_translate(x, y, z);
+	*r = oxcart_vec3_add(v1, v2);
 }
-
-OXCART_API oxcart_mat4_t mat4_multiply(const oxcart_mat4_t* m1, const oxcart_mat4_t* m2)
+OXCART_API void vec3_subtract(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2, oxcart_vec3_t* r)
 {
-	return oxcart_mat4_multiply(m1, m2);
+	*r = oxcart_vec3_subtract(v1, v2);
 }
-
-OXCART_API oxcart_mat4_t mat4_orthographic(float w, float h)
+OXCART_API void vec3_multiply(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2, oxcart_vec3_t* r)
 {
-	return oxcart_mat4_orthographic(w, h);
+	*r = oxcart_vec3_multiply(v1, v2);
 }
-
-OXCART_API oxcart_mat4_t mat4_identity()
+OXCART_API void vec3_divide(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2, oxcart_vec3_t* r)
 {
-	return oxcart_mat4_identity();
+	*r = oxcart_vec3_divide(v1, v2);
 }
-
-OXCART_API oxcart_mat3_t mat3_identity()
+OXCART_API void vec3_scale(const oxcart_vec3_t* v1, float scale, oxcart_vec3_t* r)
 {
-	return oxcart_mat3_identity();
+	*r = oxcart_vec3_scale(v1, scale);
+}
+OXCART_API void vec3_negate(const oxcart_vec3_t* v1, oxcart_vec3_t* r)
+{
+	*r = oxcart_vec3_negate(v1);
+}
+OXCART_API void vec3_sqrt(const oxcart_vec3_t* v1, oxcart_vec3_t* r)
+{
+	*r = oxcart_vec3_sqrt(v1);
+}
+OXCART_API void vec3_rsqrt(const oxcart_vec3_t* v1, oxcart_vec3_t* r)
+{
+	*r = oxcart_vec3_rsqrt(v1);
+}
+OXCART_API void vec3_normalize(oxcart_vec3_t* v1, oxcart_vec3_t* r) 
+{
+	*r = oxcart_vec3_normalize(v1);
+}
+OXCART_API void vec3_cross(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2, oxcart_vec3_t* r)
+{
+	*r = oxcart_vec3_cross(v1, v2);
+}
+OXCART_API void vec3_transform(const oxcart_vec3_t* v1, const oxcart_mat3_t* m1, oxcart_vec3_t* r)
+{
+	*r = oxcart_vec3_transform(v1, m1);
+}
+OXCART_API float vec3_dot(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2)
+{
+	return oxcart_vec3_dot(v1, v2);
+}
+OXCART_API float vec3_length(const oxcart_vec3_t* v1)
+{
+	return oxcart_vec3_length(v1);
+}
+OXCART_API float vec3_rlength(const oxcart_vec3_t* v1)
+{
+	return oxcart_vec3_rlength(v1);
+}
+OXCART_API float vec3_lengthsq(const oxcart_vec3_t* v1)
+{
+	return oxcart_vec3_lengthsq(v1);
+}
+OXCART_API float vec3_angle(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2)
+{
+	return oxcart_vec3_angle(v1, v2);
 }
 
-OXCART_API void vec3_cross(const oxcart_vec3_t* v1, const oxcart_vec3_t* v2, oxcart_vec3_t* vr) {
-	*vr = oxcart_vec3_cross(v1, v2);
+
+
+
+OXCART_API void vec4_zero(oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_zero();
+}
+OXCART_API void vec4_set(float x, float y, float z, float w, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_set(x, y, z, w);
+}
+OXCART_API void vec4_setv3(const oxcart_vec3_t* v1, float w, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_setv3(v1, w);
+}
+OXCART_API void vec4_add(const oxcart_vec4_t* v1, const oxcart_vec4_t* v2, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_add(v1, v2);
+}
+OXCART_API void vec4_subtract(const oxcart_vec4_t* v1, const oxcart_vec4_t* v2, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_subtract(v1, v2);
+}
+OXCART_API void vec4_multiply(const oxcart_vec4_t* v1, const oxcart_vec4_t* v2, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_multiply(v1, v2);
+}
+OXCART_API void vec4_divide(const oxcart_vec4_t* v1, const oxcart_vec4_t* v2, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_divide(v1, v2);
+}
+OXCART_API void vec4_scale(const oxcart_vec4_t* v1, float scale, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_scale(v1, scale);
+}
+OXCART_API void vec4_negate(const oxcart_vec4_t* v1, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_negate(v1);
+}
+OXCART_API void vec4_sqrt(const oxcart_vec4_t* v1, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_sqrt(v1);
+}
+OXCART_API void vec4_rsqrt(const oxcart_vec4_t* v1, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_rsqrt(v1);
+}
+OXCART_API void vec4_normalize(oxcart_vec4_t* v1, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_normalize(v1);
+}
+OXCART_API void vec4_cross(const oxcart_vec4_t* v1, const oxcart_vec4_t* v2, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_cross(v1, v2);
+}
+OXCART_API void vec4_transform(const oxcart_vec4_t* v1, const oxcart_mat4_t* m1, oxcart_vec4_t* r)
+{
+	*r = oxcart_vec4_transform(v1, m1);
+}
+OXCART_API float vec4_dot(const oxcart_vec4_t* v1, const oxcart_vec4_t* v2)
+{
+	return oxcart_vec4_dot(v1, v2);
+}
+OXCART_API float vec4_length(const oxcart_vec4_t* v1)
+{
+	return oxcart_vec4_length(v1);
+}
+OXCART_API float vec4_rlength(const oxcart_vec4_t* v1)
+{
+	return oxcart_vec4_rlength(v1);
+}
+OXCART_API float vec4_lengthsq(const oxcart_vec4_t* v1)
+{
+	return oxcart_vec4_lengthsq(v1);
+}
+OXCART_API float vec4_angle(const oxcart_vec4_t* v1, const oxcart_vec4_t* v2)
+{
+	return oxcart_vec4_angle(v1, v2);
 }
 
-OXCART_API void vec3_normalize(oxcart_vec3_t* v) {
-	*v = oxcart_vec3_normalize(v);
+
+OXCART_API void mat3_identity(oxcart_mat3_t* r)
+{
+	*r = oxcart_mat3_identity();
 }
 
-OXCART_API void vec4_normalize(oxcart_vec4_t* v) {
-	*v = oxcart_vec4_normalize(v);
-}
 
-OXCART_API void mat4_to_mat3_normal(const oxcart_mat4_t* m1, oxcart_mat3_t* r) {
+OXCART_API void mat4_to_mat3_normal(const oxcart_mat4_t* m1, oxcart_mat3_t* r) 
+{
 	r->d[0] = m1->d[0];	r->d[1] = m1->d[1];	r->d[2] = m1->d[2];
 	r->d[3] = m1->d[4];	r->d[4] = m1->d[5];	r->d[5] = m1->d[6];
 	r->d[6] = m1->d[8];	r->d[7] = m1->d[9];	r->d[8] = m1->d[10];
@@ -385,3 +501,45 @@ OXCART_API void mat4_to_mat3_normal(const oxcart_mat4_t* m1, oxcart_mat3_t* r) {
 	oxcart_mat3_t inverse = oxcart_mat3_affineinverse(r);
 	*r = oxcart_mat3_transpose(&inverse);
 }
+
+OXCART_API void mat4_inverse(const oxcart_mat4_t* m1, oxcart_mat4_t* r) 
+{
+	float determinate;
+	*r = oxcart_mat4_inverse(m1, &determinate);
+}
+
+OXCART_API void mat4_multiply(const oxcart_mat4_t* m1, const oxcart_mat4_t* m2, oxcart_mat4_t* r) 
+{
+	*r = oxcart_mat4_multiply(m1, m2);
+}
+
+OXCART_API void mat4_lookat(const oxcart_vec3_t* eye, const oxcart_vec3_t* target, const oxcart_vec3_t* up, oxcart_mat4_t* r) 
+{
+	*r = oxcart_mat4_lookat(eye, target, up);
+}
+
+OXCART_API void mat4_perspective(const float fovy, const float aspect, const float n, const float f, oxcart_mat4_t* r)
+{
+	*r = oxcart_mat4_perspective(fovy, aspect, n, f);
+}
+
+OXCART_API void mat4_rotate(const float x, const float y, const float z, const float angle, oxcart_mat4_t* r)
+{
+	*r = oxcart_mat4_rotate(x, y, z, angle);
+}
+
+OXCART_API void mat4_translate(const float x, const float y, const float z, oxcart_mat4_t* r)
+{
+	*r = oxcart_mat4_translate(x, y, z);
+}
+
+OXCART_API void mat4_orthographic(const float w, const float h, oxcart_mat4_t* r)
+{
+	*r = oxcart_mat4_orthographic(w, h);
+}
+
+OXCART_API void mat4_identity(oxcart_mat4_t* r)
+{
+	*r = oxcart_mat4_identity();
+}
+

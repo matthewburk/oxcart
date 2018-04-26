@@ -1,14 +1,16 @@
 local ffi = require 'ffi'
 local gl = require 'opengl'
 local bit = require 'bit'
-require 'oxcart.geometry'
+
+local aabb = require 'oxcart.geometry.aabb'
 require 'oxcart.program'
 local C = ffi.C
 
 require 'strict'
 
-local math = require('oxcart.math')
+local math = require 'oxcart.math'
 local vector = require 'oxcart.vector'
+local mat4 = math.mat4
 
 local M = {}
 
@@ -34,7 +36,7 @@ M.program = oxcart.program.new {
 
   void main()
   {
-    vs_color = color;
+    vs_color = color/255;
     vs_normal = normalize(mat3(m_model) * normal);
     vs_position = vec3(m_model * position);
 
@@ -90,9 +92,9 @@ typedef struct block {
   uint8_t b;
   uint8_t a;
   int8_t value; 
-  uint8_t near; //l, r, t, b, f, k
-  uint8_t corners; //ltf, rtf, lbf, rbf, ltk, rtk, lbk, rbk 
-  uint8_t reserve;
+  //uint8_t near; //l, r, t, b, f, k
+  //uint8_t corners; //ltf, rtf, lbf, rbf, ltk, rtk, lbk, rbk 
+  //uint8_t reserve;
 } block_t;
 ]]
 
@@ -102,6 +104,7 @@ local function makechunktype(size)
   local col_t = ffi.typeof('block_t[$]', size+2)
   local grid_t = ffi.typeof('$[$]', col_t, size+2)
   local chunk_t = ffi.typeof('$[$]', grid_t, size+2)
+  local pchunk_t = ffi.typeof('$*', chunk_t)
 
   local mt = {}
   mt.__index = mt
@@ -110,10 +113,33 @@ local function makechunktype(size)
   mt.col_t = col_t
   mt.size = size
 
+
+  function mt:draw(i)
+    if self.triangles.vao then
+      gl.glUseProgram(self.triangles.program.id)
+      gl.glBindVertexArray(self.triangles.vao)
+      gl.glDrawElements(GL_TRIANGLES, self.triangles.nelements, GL_UNSIGNED_INT, nil)
+    end
+  end
+
+  local aabbmin = ffi.new('vec4_t', 0, 0, 0, 1)
+  local aabbmax = ffi.new('vec4_t', size, size, size, 1)
+
+  function mt:reset()
+    ffi.copy(self.aabb.min, aabbmin, ffi.sizeof(aabbmin))
+    ffi.copy(self.aabb.max, aabbmax, ffi.sizeof(aabbmax))
+    self.transform:identity()
+    self.triangles = nil
+  end
+
+  dprint('sizeof chunk', size, ffi.sizeof(chunk_t))
+
   local function new()
-    local data = chunk_t()
+    local data = ffi.cast(pchunk_t, C.malloc(ffi.sizeof(chunk_t)))[0]
     local chunk = {
       data=data,
+      aabb=aabb.new(aabbmin, aabbmax),
+      transform = mat4.identity(),
     }
 
     return setmetatable(chunk, mt)
@@ -249,10 +275,16 @@ typedef struct sidesampler {
   ffi.metatype('sidesampler_t', mt)
 end
 
-ffi.cdef[[typedef struct chunkvertex {
-  point3_t position;
+ffi.cdef[[
+typedef struct chunkvertex {
+  vec3_t position;
   vec3_t normal;
-  color4f_t color;
+  struct {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t a;
+  }color;
 } chunkvertex_t;
 ]]
 
@@ -311,10 +343,10 @@ do
 
   local function addcolor()
     ao0 = calcvertex0ao() ao1 = calcvertex1ao() ao2 = calcvertex2ao() ao3 = calcvertex3ao()
-    face[0].color.r=blockcolor.r*ao0; face[0].color.g=blockcolor.g*ao0; face[0].color.b=blockcolor.b*ao0; face[0].color.a=1
-    face[1].color.r=blockcolor.r*ao1; face[1].color.g=blockcolor.g*ao1; face[1].color.b=blockcolor.b*ao1; face[1].color.a=1
-    face[2].color.r=blockcolor.r*ao2; face[2].color.g=blockcolor.g*ao2; face[2].color.b=blockcolor.b*ao2; face[2].color.a=1
-    face[3].color.r=blockcolor.r*ao3; face[3].color.g=blockcolor.g*ao3; face[3].color.b=blockcolor.b*ao3; face[3].color.a=1
+    face[0].color.r=255*blockcolor.r*ao0; face[0].color.g=255*blockcolor.g*ao0; face[0].color.b=255*blockcolor.b*ao0; face[0].color.a=255
+    face[1].color.r=255*blockcolor.r*ao1; face[1].color.g=255*blockcolor.g*ao1; face[1].color.b=255*blockcolor.b*ao1; face[1].color.a=255
+    face[2].color.r=255*blockcolor.r*ao2; face[2].color.g=255*blockcolor.g*ao2; face[2].color.b=255*blockcolor.b*ao2; face[2].color.a=255
+    face[3].color.r=255*blockcolor.r*ao3; face[3].color.g=255*blockcolor.g*ao3; face[3].color.b=255*blockcolor.b*ao3; face[3].color.a=255
   end
 
   local function addfront(i, x, y, z)
@@ -437,7 +469,7 @@ do
     end
 
     do --colors
-      gl.glVertexAttribPointer(oxcart.attrib.color, 4, GL_FLOAT, GL_FALSE, size, ffi.cast('void*', ffi.offsetof('chunkvertex_t', 'color')))
+      gl.glVertexAttribPointer(oxcart.attrib.color, 4, GL_UNSIGNED_BYTE, GL_FALSE, size, ffi.cast('void*', ffi.offsetof('chunkvertex_t', 'color')))
       gl.glEnableVertexAttribArray(oxcart.attrib.color)
     end
 
@@ -533,15 +565,19 @@ do
 
     local nelements = indicesarray:size()
 
-    local handles = genbuffers(vertexarray, indicesarray)
+    local handles
+    if nelements > 0 then
+      handles = genbuffers(vertexarray, indicesarray)
+    end
 
-    return {
-      transform = C.mat4_identity(),
+    chunk.triangles =     {
       cdata = handles,
       program = M.program,
-      vao = handles.vao,
+      vao = handles and handles.vao,
       nelements = nelements,
     }
+
+    return chunk.triangles
   end
 end
 
